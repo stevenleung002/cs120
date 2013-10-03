@@ -4,7 +4,7 @@
  *	Your ability to modify the kernel is via these functions.  You may
  *	modify the bodies of these functions, and add code outside or them,
  *	in any way you wish (however, you cannot change their interfaces).
- * 
+ *
  */
 
 #include "aux.h"
@@ -18,11 +18,24 @@
  * SwitchContext (p) is an internal working version of context switching.
  * This is provided so that the kernel works without modification, to
  * allow the other exercises to execute and to illustrate proper behavior.
- * For Exercise F, the call to SwitchContext (p) must be removed. 
+ * For Exercise F, the call to SwitchContext (p) must be removed.
  */
- 
+
 int MySwitchContext (p)
 	int p;
 {
+  int magic = 0;
+
+  SaveContext();
+
+  if (magic == 1)
+  {
+    return;
+  }
+
+  else{
+    magic = 1
+  }
+
 	return (SwitchContext (p));
 }

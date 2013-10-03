@@ -205,8 +205,6 @@ void Main ()
 		Exit ();
 	}
 
-	Printf ("I am the parent, my pid is %d\n", Getpid ());
-	Printf ("I just created a child process whose pid is %d\n", pid);
 
 	if ((pid = Fork ()) == 0) {
 
@@ -217,6 +215,8 @@ void Main ()
 	}
 
 	/* HERE */
+	Printf ("I am the parent, my pid is %d\n", Getpid ());
+	Printf ("I just created a child process whose pid is %d\n", pid);
 
 	Printf ("I (the parent) just created a second child process whose pid is %d\n", pid);
 }
@@ -353,6 +353,11 @@ void handoff (int p);
 void Main ()
 {
 	int i, p, c, r;
+	/*
+		p = 1
+		p = 2
+		1
+	*/
 
 	for (i = 0, p = Getpid (); i < NUMPROCS; i++, p = c) {
 		Printf ("%d about to fork\n", Getpid ());
@@ -384,13 +389,13 @@ void handoff (p)
 }
 
 /* Programming Assignment 1: Exercise F
- * 
+ *
  * We are now FINALLY ready to modify the Umix operating system kernel.
  * Up until now, you have studied and modified only user programs that
  * make system calls, but not the kernel.  Here, you will make your first
  * addition to the kernel by implementing the all-important function of
  * context switching.
- * 
+ *
  * Whenever Yield (pid) is called, the kernel is entered and eventually
  * calls MySwitchContext (p), which causes a context switch to process p,
  * and returns the process id of the process that just called Yield (pid).
@@ -403,12 +408,12 @@ void handoff (p)
  * to be able to run all the programs shown so far.  In this exercise, you
  * will REMOVE the call to SwitchContext (p), which will break the kernel,
  * and in its place, add your own code to make the kernel work properly again.
- * 
+ *
  * MySwitchContext (p) should cause a context switch from the currently
  * running process to process p.  To implement MySwitchContext (p), you
  * are given three utility functions:  SaveContext (), RestoreContext (p),
  * and GetCurProc ().
- * 
+ *
  * SaveContext () saves the context of the currently running process (just
  * prior to entering the kernel), storing the state of the CPU registers,
  * including the SP (stack pointer) and lastly the PC (program counter),
@@ -419,7 +424,7 @@ void handoff (p)
  * previously saved for process p.
  *
  * GetCurProc () simply returns the id of the currently running process.
- * 
+ *
  * Consider what happens when a process's context is restored.  It begins
  * executing from wherever the PC was pointing to when its state was saved,
  * specifically, somewhere within of SaveContext ().  (In fact, it is saved
@@ -431,7 +436,7 @@ void handoff (p)
  * can determine whether or not RestoreContext (p) should be called.
  * (Hint: study the Lecture notes on context switching.  If you
  * understand the notes, you will know how to write this code).
- * 
+ *
  * You now have all the tools to implement MySwitchContext (p).  Remove the
  * call to SwitchContext (p) so that the body of MySwitchContext (p) is now
  * empty, and then replace with YOUR code.  The only functions you will need
@@ -455,7 +460,7 @@ void handoff (p)
  * below, as well as other test cases you design.  You should test it
  * thoroughly, as it will be graded by seeing if it successfully runs with
  * other test programs (not available to you).
- * 
+ *
  * Good luck!
  */
 
