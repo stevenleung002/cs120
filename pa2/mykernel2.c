@@ -149,6 +149,7 @@ int StartingProc (pid)
       proctab[i].valid = 1;
       proctab[i].pid = pid;
       enqueue(&pid_queue, pid);
+      print_queue(&pid_queue);
 
       return (1);
     }
