@@ -83,6 +83,21 @@ int empty(queue *q)
   if (q->count <= 0) return 1;
   else return 0;
 }
+
+void print_queue(queue *q)
+{
+  int i,j;
+
+  i=q->first;
+
+  while (i != q->last) {
+          Printf("%c ",q->q[i]);
+          i = (i+1) % QUEUESIZE;
+  }
+
+  Printf("%2d ",q->q[i]);
+  Printf("\n");
+}
 /*  InitSched () is called when kernel starts up.  First, set the
  *  scheduling policy (see sys.h).  Make sure you follow the rules
  *  below on where and how to set it.  Next, initialize all your data
@@ -202,6 +217,7 @@ int SchedProc ()
 
   case LIFO:
     if( !empty(&pid_queue) ){
+      print_queue(&pid_queue)
       lifo_pid = lifo_dequeue(&pid_queue);
       return lifo_pid;
     }
