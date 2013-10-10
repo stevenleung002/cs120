@@ -151,8 +151,6 @@ int EndingProc (pid)
   }
 
   Printf ("Error in EndingProc: can't find process %d\n", pid);
-  empty(&fifoQueue);
-
   return (0);
 }
 
