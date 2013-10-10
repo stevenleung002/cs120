@@ -219,7 +219,9 @@ int SchedProc ()
 
   case LIFO:
     if(proctab[0].valid){
+      Printf("before dosched");
       DoSched();
+      Printf("after dosched");
       return proctab[0].pid;
     }
     break;
