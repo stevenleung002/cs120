@@ -179,8 +179,10 @@ int SchedProc ()
     break;
 
   case FIFO:
-    fifo_pid = dequeue(&fifoQueue);
-    return fifo_pid;
+    if (!empty(&fifoQueue)){
+      fifo_pid = dequeue(&fifoQueue);
+      return fifo_pid;
+    }
 
     break;
 
