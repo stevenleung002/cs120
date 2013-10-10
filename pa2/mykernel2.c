@@ -66,8 +66,8 @@ int dequeue(queue *q)
 
 int empty(queue *q)
 {
-  if (q->count <= 0) return (TRUE);
-  else return (FALSE);
+  if (q->count <= 0) return 1;
+  else return 0;
 }
 /*  InitSched () is called when kernel starts up.  First, set the
  *  scheduling policy (see sys.h).  Make sure you follow the rules
