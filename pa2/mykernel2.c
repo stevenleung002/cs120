@@ -30,14 +30,14 @@ typedef struct{
 }queue;
 
 
-init_queue(queue *q)
+void init_queue(queue *q)
 {
   q->first = 0;
   q->last = QUEUESIZE - 1;
   q->count = 0;
 }
 
-enqueue(queue *q, int x)
+void enqueue(queue *q, int x)
 {
   if (q->count >= QUEUESIZE)
   printf("Warning: queue overflow enqueue x=%d\n",x);
