@@ -119,12 +119,11 @@ int StartingProc (pid)
     if (! proctab[i].valid) {
       proctab[i].valid = 1;
       proctab[i].pid = pid;
+      enqueue(&fifoQueue, pid);
+
       return (1);
     }
   }
-
-  enqueue(&fifoQueue, pid);
-
 
   Printf ("Error in StartingProc: no free table entries\n");
   return (0);
