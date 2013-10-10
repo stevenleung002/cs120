@@ -74,6 +74,8 @@ int lifo_dequeue(queue *q)
     q->last = (q->last - 1) % QUEUESIZE;
     q->count = q->count -1;
   }
+
+  return(x);
 }
 
 int empty(queue *q)
