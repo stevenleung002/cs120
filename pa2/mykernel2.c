@@ -218,7 +218,9 @@ int SchedProc ()
     break;
 
   case LIFO:
-
+    if(proctab[0].valid){
+      return proctab[0].pid;
+    }
     break;
 
   case ROUNDROBIN:
