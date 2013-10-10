@@ -29,7 +29,7 @@ typedef struct{
   int count;
 }queue;
 
-static queue fifoQueue;
+static queue pid_queue;
 
 
 void init_queue(queue *q)
@@ -62,6 +62,18 @@ int dequeue(queue *q)
   }
 
   return(x);
+}
+
+int lifo_dequeue(queue *q)
+{
+  int x;
+
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  else{
+    x = q->q[ q->last];
+    q->last = (q->last - 1) % QUEUESIZE;
+    q->count = q->count -1;
+  }
 }
 
 int empty(queue *q)
@@ -98,7 +110,7 @@ void InitSched ()
     proctab[i].valid = 0;
   }
   /* Initialize FIFO Queue; */
-  init_queue(&fifoQueue);
+  init_queue(&pid_queue);
   /* Set the timer last */
   SetTimer (TIMERINTERVAL);
 }
@@ -119,7 +131,7 @@ int StartingProc (pid)
     if (! proctab[i].valid) {
       proctab[i].valid = 1;
       proctab[i].pid = pid;
-      enqueue(&fifoQueue, pid);
+      enqueue(&pid_queue, pid);
 
       return (1);
     }
@@ -165,6 +177,7 @@ int SchedProc ()
 {
   int i;
   int fifo_pid;
+  int lifo_pid;
 
   switch (GetSchedPolicy ()) {
 
@@ -178,17 +191,18 @@ int SchedProc ()
     break;
 
   case FIFO:
-    if (!empty(&fifoQueue)){
-      fifo_pid = dequeue(&fifoQueue);
+    if ( !empty(&pid_queue) ){
+      fifo_pid = dequeue(&pid_queue);
       return fifo_pid;
     }
 
     break;
 
   case LIFO:
-
-    /* your code here */
-
+    if( !empty(&pid_queue) ){
+      lifo_pid = lifo_dequeue(&pid_queue);
+      return lifo_pid;
+    }
     break;
 
   case ROUNDROBIN:
