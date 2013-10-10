@@ -54,7 +54,7 @@ int dequeue(queue *q)
 {
   int x;
 
-  if (q->count <= 0) printf("Warning: empty queue dequeue.\n");
+  if (q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   else {
     x = q->q[ q->first ];
     q->first = (q->first+1) % QUEUESIZE;
@@ -64,6 +64,11 @@ int dequeue(queue *q)
   return(x);
 }
 
+int empty(queue *q)
+{
+  if (q->count <= 0) return (TRUE);
+  else return (FALSE);
+}
 /*  InitSched () is called when kernel starts up.  First, set the
  *  scheduling policy (see sys.h).  Make sure you follow the rules
  *  below on where and how to set it.  Next, initialize all your data
@@ -85,7 +90,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (ARBITRARY);   /* set policy here */
+    SetSchedPolicy (FIFO);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
@@ -118,6 +123,7 @@ int StartingProc (pid)
     }
   }
 
+  enqueue(fifoQueue, pid);
 
 
   Printf ("Error in StartingProc: no free table entries\n");
@@ -145,6 +151,8 @@ int EndingProc (pid)
   }
 
   Printf ("Error in EndingProc: can't find process %d\n", pid);
+  empty(fifoQueue);
+
   return (0);
 }
 
@@ -159,6 +167,7 @@ int EndingProc (pid)
 int SchedProc ()
 {
   int i;
+  int fifo_pid;
 
   switch (GetSchedPolicy ()) {
 
@@ -172,8 +181,8 @@ int SchedProc ()
     break;
 
   case FIFO:
-
-    /* your code here */
+    fifo_pid = dequeue(fifoQueue);
+    return fifo_pid;
 
     break;
 
