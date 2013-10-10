@@ -219,6 +219,7 @@ int SchedProc ()
 
   case LIFO:
     if(proctab[0].valid){
+      DoSched();
       return proctab[0].pid;
     }
     break;
