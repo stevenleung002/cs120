@@ -123,7 +123,7 @@ int StartingProc (pid)
     }
   }
 
-  enqueue(fifoQueue, pid);
+  enqueue(&fifoQueue, pid);
 
 
   Printf ("Error in StartingProc: no free table entries\n");
@@ -181,7 +181,7 @@ int SchedProc ()
     break;
 
   case FIFO:
-    fifo_pid = dequeue(fifoQueue);
+    fifo_pid = dequeue(&fifoQueue);
     return fifo_pid;
 
     break;
