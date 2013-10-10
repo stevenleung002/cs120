@@ -217,7 +217,7 @@ int SchedProc ()
 
   case LIFO:
     if( !empty(&pid_queue) ){
-      print_queue(&pid_queue)
+      print_queue(&pid_queue);
       lifo_pid = lifo_dequeue(&pid_queue);
       return lifo_pid;
     }
