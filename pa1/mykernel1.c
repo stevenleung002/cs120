@@ -20,22 +20,23 @@
  * allow the other exercises to execute and to illustrate proper behavior.
  * For Exercise F, the call to SwitchContext (p) must be removed.
  */
-
+static int parent_pid; //tracking parent pid
 int MySwitchContext (p)
-	int p;
+  int p;
 {
   int magic = 0;
-
+  parent_pid = GetCurProc(); //set parent pid
+  
   SaveContext();
 
-  if (magic == 1)
+  if (magic == 1) //implemented according to lecture note
   {
-    return;
+    return parent_pid; 
   }
 
   else{
-    magic = 1
+    magic = 1;
   }
 
-	return (SwitchContext (p));
+  RestoreContext (p); 
 }

@@ -6,7 +6,7 @@ LIBDIR = $(UMIXPUBDIR)/lib
 CC 	= cc 
 FLAGS 	= -g -L$(LIBDIR) -lumix1
 
-PA1 =	pa1a pa1b pa1c pa1d pa1e pa1f
+PA1 =	pa1a pa1b pa1c pa1d pa1e pa1f test
 
 pa1:	$(PA1)
 
@@ -27,6 +27,8 @@ pa1e:	pa1e.c aux.h umix.h mykernel1.o
 
 pa1f:	pa1f.c aux.h umix.h mykernel1.o
 	$(CC) $(FLAGS) -o pa1f pa1f.c mykernel1.o
+test:   test.c aux.h umix.h mykernel1.o
+	$(CC) $(FLAGS) -o test test.c mykernel1.o
 
 mykernel1.o:	mykernel1.c aux.h sys.h mykernel1.h
 	$(CC) $(FLAGS) -c mykernel1.c
