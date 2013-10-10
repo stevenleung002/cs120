@@ -29,6 +29,8 @@ typedef struct{
   int count;
 }queue;
 
+static queue fifoQueue;
+
 
 void init_queue(queue *q)
 {
@@ -40,7 +42,7 @@ void init_queue(queue *q)
 void enqueue(queue *q, int x)
 {
   if (q->count >= QUEUESIZE)
-  printf("Warning: queue overflow enqueue x=%d\n",x);
+  Printf("Warning: queue overflow enqueue x=%d\n",x);
   else {
     q->last = (q->last+1) % QUEUESIZE;
     q->q[ q->last ] = x;
@@ -72,7 +74,6 @@ int dequeue(queue *q)
 void InitSched ()
 {
   int i;
-  queue fifoQueue;
   /* First, set the scheduling policy.  You should only set it
    * from within this conditional statement.  While you are working
    * on this assignment, GetSchedPolicy will return NOSCHEDPOLICY,
@@ -116,6 +117,8 @@ int StartingProc (pid)
       return (1);
     }
   }
+
+
 
   Printf ("Error in StartingProc: no free table entries\n");
   return (0);
