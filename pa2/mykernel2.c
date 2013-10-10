@@ -218,12 +218,7 @@ int SchedProc ()
     break;
 
   case LIFO:
-    if( !empty(&pid_queue) ){
-      Printf("Scheduling Proc\n");
-      print_queue(&pid_queue);
-      lifo_pid = lifo_dequeue(&pid_queue);
-      return lifo_pid;
-    }
+
     break;
 
   case ROUNDROBIN:
