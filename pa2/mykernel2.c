@@ -293,7 +293,7 @@ int SchedProc ()
 
   case ROUNDROBIN:
     if ( !empty(&pid_queue) ){
-      ror_pid = get_queue_first(&pid_queue);
+      ror_pid = get_queue_next(&pid_queue);
       SetTimer(TIMERINTERVAL);
       return ror_pid;
     }
