@@ -26,6 +26,7 @@ typedef struct{
   int q[QUEUESIZE -1];
   int first;
   int last;
+  int pointer;
   int count;
 }queue;
 
@@ -37,6 +38,7 @@ void init_queue(queue *q)
   q->first = 0;
   q->last = QUEUESIZE - 1;
   q->count = 0;
+  q->pointer = 0;
 }
 
 void enqueue(queue *q, int x)
@@ -90,6 +92,13 @@ int get_queue_first(queue *q)
   return q->q[ q->first ];
 }
 
+int get_queue_next(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  int current = q->pointer;
+  q->pointer = (q->pointer + 1) % QUEUESIZE
+  return current
+}
 
 int empty(queue *q)
 {
@@ -132,7 +141,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (LIFO);   /* set policy here */
+    SetSchedPolicy (ROUNDROBIN);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
@@ -181,6 +190,13 @@ int StartingProc (pid)
       Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
       DoSched();
+      return (1);
+
+      break;
+
+    case ROUNDROBIN:
+      Printf("Starting Proc %d\n", pid);
+      enqueue(&pid_queue, pid);
       return (1);
 
       break;
@@ -245,6 +261,7 @@ int SchedProc ()
   int i;
   int fifo_pid;
   int lifo_pid;
+  int ror_pid;
 
   switch (GetSchedPolicy ()) {
 
@@ -275,9 +292,12 @@ int SchedProc ()
     break;
 
   case ROUNDROBIN:
-
-    /* your code here */
-
+    if ( !empty(&pid_queue) ){
+      ror_pid = get_queue_next(&pid_queue);
+      Printf("Scheduling Proc %d\n", ror_pid);
+      SetTimer(TIMERINTERVAL);
+      return ror_pid;
+    }
     break;
 
   case PROPORTIONAL:
