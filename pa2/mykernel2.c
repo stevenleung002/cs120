@@ -84,6 +84,13 @@ int get_queue_last(queue *q)
   return q->q[ q->last ];
 }
 
+int get_queue_first(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->first ];
+}
+
+
 int empty(queue *q)
 {
   if (q->count <= 0) return 1;
@@ -97,8 +104,8 @@ void print_queue(queue *q)
   i=q->first;
 
   while (i != q->last) {
-          Printf("%c ",q->q[i]);
-          i = (i+1) % QUEUESIZE;
+    Printf("%c ",q->q[i]);
+    i = (i+1) % QUEUESIZE;
   }
 
   Printf("%2d ",q->q[i]);
@@ -173,6 +180,7 @@ int StartingProc (pid)
     case LIFO:
       Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
+      DoSched();
       return (1);
 
       break;
@@ -209,6 +217,7 @@ int EndingProc (pid)
       break;
 
     case FIFO:
+      fifo_dequeue(&pid_queue);
       return (1);
       break;
 
@@ -250,7 +259,7 @@ int SchedProc ()
 
   case FIFO:
     if ( !empty(&pid_queue) ){
-      fifo_pid = dequeue(&pid_queue);
+      fifo_pid = get_queue_first(&pid_queue);
       Printf("Scheduling Proc %d\n", fifo_pid);
       return fifo_pid;
     }
@@ -261,7 +270,6 @@ int SchedProc ()
     if( !empty(&pid_queue) ){
       lifo_pid = get_queue_last(&pid_queue);
       Printf("Current Pid %d\n", GetCurProc());
-      DoSched();
       Printf("Scheduling Proc %d\n", lifo_pid);
       return lifo_pid;
     }
