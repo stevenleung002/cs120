@@ -11,7 +11,7 @@
 #include "sys.h"
 #include "mykernel2.h"
 
-#define TIMERINTERVAL 100000  /* in ticks (tick = 10 msec) */
+#define TIMERINTERVAL 1  /* in ticks (tick = 10 msec) */
 
 #define QUEUESIZE 1000
 /*  A sample process table.  You may change this any way you wish.
