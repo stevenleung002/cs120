@@ -113,8 +113,10 @@ void delete_pid(queue *q, int pid)
     Printf("deleting %d", pid);
     for(int i = 0; i < q->count; i++)
     {
+      Printf(" %d ", q->q[i]);
       if(q->q[i] == pid)
       {
+        Printf(" last: %d ", q->last);
         while(i <= q->last)
         {
           q->q[i] = q->q[i+1];
