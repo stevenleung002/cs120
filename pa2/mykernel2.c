@@ -151,7 +151,7 @@ int StartingProc (pid)
       enqueue(&pid_queue, pid);
       Printf("starting Proc\n");
       print_queue(&pid_queue);
-
+      DoSched();
       return (1);
     }
   }
