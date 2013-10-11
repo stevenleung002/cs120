@@ -110,25 +110,19 @@ void delete_pid(queue *q, int pid)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   else{
-    Printf("deleting %d", pid);
     for(int i = 0; i < q->count; i++)
     {
-      Printf(" %d ", q->q[i]);
       if(q->q[i] == pid)
       {
-        Printf(" last: %d ", q->last);
         while(i <= q->last)
         {
-          Printf(" i: %d ", i);
           q->q[i] = q->q[i+1];
           i++;
         }
-        Printf(" jump out of while");
         q->last = (q->last - 1) % QUEUESIZE;
         q->count = q->count -1;
       }
     }
-    Printf("deleted %d", pid);
   }
 }
 
