@@ -96,7 +96,7 @@ int get_queue_next(queue *q)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   int current = q->pointer;
-  q->pointer = (q->pointer + 1) % QUEUESIZE;
+  q->pointer = (q->pointer + 1) % q->count;
   return q->q[current];
 }
 
