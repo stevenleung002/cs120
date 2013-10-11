@@ -150,17 +150,37 @@ int StartingProc (pid)
 {
   int i;
 
-  for (i = 0; i < MAXPROCS; i++) {
-    if (! proctab[i].valid) {
-      proctab[i].valid = 1;
-      proctab[i].pid = pid;
+  switch (GetSchedPolicy ()) {
+    case ARBITRARY:
+
+      for (i = 0; i < MAXPROCS; i++) {
+        if (! proctab[i].valid) {
+          proctab[i].valid = 1;
+          proctab[i].pid = pid;
+          return (1);
+        }
+      }
+
+      break;
+
+    case FIFO:
       Printf("Starting Proc ");
       print_queue(&pid_queue);
       enqueue(&pid_queue, pid);
+      return (1);
+
+      break;
+
+    case LIFO:
+      Printf("Starting Proc %d\n", pid);
+      enqueue(&pid_queue, pid);
       DoSched();
       return (1);
-    }
+
+      break;
   }
+
+
 
   Printf ("Error in StartingProc: no free table entries\n");
   return (0);
