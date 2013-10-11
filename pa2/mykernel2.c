@@ -259,7 +259,7 @@ int EndingProc (pid)
 
       break;
     case ROUNDROBIN:
-      dequeue(&pid_queue);
+      delete_pid(&pid_queue, pid);
       return(1);
       break;
   }

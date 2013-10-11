@@ -1,0 +1,32 @@
+Starting Proc 1
+Scheduling Proc 1
+Starting Proc 2
+Starting Proc 3
+1111111111Scheduling Proc 2
+Starting Proc 4
+2222222222Scheduling Proc 3
+3333333333Scheduling Proc 4
+4444444444
+System exiting (normal)
+
+
+
+Starting Proc 1
+Scheduling Proc 1
+Starting Proc 2
+Scheduling Proc 2
+Starting Proc 3
+
+Starting Proc 1
+Scheduling Proc 1
+Starting Proc 2
+Scheduling Proc 2
+Starting Proc 3
+Scheduling Proc 3
+4444444444Scheduling Proc 2
+2222222222Scheduling Proc 1
+Starting Proc 4
+Scheduling Proc 4
+3333333333Scheduling Proc 1
+1111111111
+System exiting (normal)
