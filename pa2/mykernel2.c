@@ -165,7 +165,6 @@ int StartingProc (pid)
 
     case FIFO:
       Printf("Starting Proc ");
-      print_queue(&pid_queue);
       enqueue(&pid_queue, pid);
       return (1);
 
@@ -174,7 +173,6 @@ int StartingProc (pid)
     case LIFO:
       Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
-      print_queue(&pid_queue);
       return (1);
 
       break;
