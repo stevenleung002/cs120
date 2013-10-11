@@ -77,7 +77,7 @@
  *
  * 3. Try larger values for TIMERINTERVAL, such as 10 and 100.  What is the
  * effect on the interleaving of the output, and why?
- * 
+ *
  * 4. Implement the PROPORTIONAL scheduling policy.  This allows processes to
  * call RequestCPUrate (m, n) to receive a fraction of CPU time equal to m/n;
  * specifically, within n consecutive quantums, m should be allocated to that

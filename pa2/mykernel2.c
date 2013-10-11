@@ -11,7 +11,7 @@
 #include "sys.h"
 #include "mykernel2.h"
 
-#define TIMERINTERVAL 10  /* in ticks (tick = 10 msec) */
+#define TIMERINTERVAL 1  /* in ticks (tick = 10 msec) */
 
 #define QUEUESIZE 1000
 /*  A sample process table.  You may change this any way you wish.
@@ -196,9 +196,13 @@ int StartingProc (pid)
 
     case ROUNDROBIN:
       Printf("Starting Proc %d\n", pid);
-      enqueue(&pid_queue, pid);
-      return (1);
-
+      for (i = 0; i < MAXPROCS; i++) {
+        if (! proctab[i].valid) {
+          proctab[i].valid = 1;
+          proctab[i].pid = pid;
+          return (1);
+        }
+      }
       break;
   }
 
@@ -240,6 +244,15 @@ int EndingProc (pid)
     case LIFO:
       lifo_dequeue(&pid_queue);
       return(1);
+
+      break;
+    case ROUNDROBIN:
+      for (i = 0; i < MAXPROCS; i++) {
+        if (proctab[i].valid && proctab[i].pid == pid) {
+          proctab[i].valid = 0;
+          return (1);
+        }
+      }
 
       break;
   }
@@ -292,9 +305,11 @@ int SchedProc ()
     break;
 
   case ROUNDROBIN:
-    if ( !empty(&pid_queue) ){
-      ror_pid = get_queue_next(&pid_queue);
-      return ror_pid;
+
+    for (i = 0; i < MAXPROCS; i++) {
+      if (proctab[i].valid) {
+        return (proctab[i].pid);
+      }
     }
     break;
 
