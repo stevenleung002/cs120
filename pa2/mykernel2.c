@@ -154,6 +154,8 @@ int StartingProc (pid)
     if (! proctab[i].valid) {
       proctab[i].valid = 1;
       proctab[i].pid = pid;
+      Printf("Starting Proc ");
+      print_queue(&q);
       enqueue(&pid_queue, pid);
       DoSched();
       return (1);
@@ -225,6 +227,7 @@ int SchedProc ()
   case LIFO:
     if( !empty(&pid_queue) ){
       lifo_pid = get_queue_last(&pid_queue);
+      Printf("Scheduling Proc %d\n", lifo_pid);
       return lifo_pid;
     }
     break;
