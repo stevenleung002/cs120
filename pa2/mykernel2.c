@@ -11,7 +11,7 @@
 #include "sys.h"
 #include "mykernel2.h"
 
-#define TIMERINTERVAL 1  /* in ticks (tick = 10 msec) */
+#define TIMERINTERVAL 10  /* in ticks (tick = 10 msec) */
 
 #define QUEUESIZE 1000
 /*  A sample process table.  You may change this any way you wish.
@@ -294,7 +294,6 @@ int SchedProc ()
   case ROUNDROBIN:
     if ( !empty(&pid_queue) ){
       ror_pid = get_queue_next(&pid_queue);
-      Printf("Scheduling Proc %d\n", ror_pid);
       return ror_pid;
     }
     break;
