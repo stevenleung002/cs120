@@ -224,7 +224,7 @@ int SchedProc ()
 
   case LIFO:
     if( !empty(&pid_queue) ){
-      lifo_pid = get_queue_last(&queue);
+      lifo_pid = get_queue_last(&pid_queue);
       return lifo_pid;
     }
     break;
