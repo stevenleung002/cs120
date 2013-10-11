@@ -269,7 +269,6 @@ int SchedProc ()
   case LIFO:
     if( !empty(&pid_queue) ){
       lifo_pid = get_queue_last(&pid_queue);
-      Printf("Current Pid %d\n", GetCurProc());
       Printf("Scheduling Proc %d\n", lifo_pid);
       return lifo_pid;
     }
