@@ -218,11 +218,11 @@ int SchedProc ()
     break;
 
   case LIFO:
-    if(proctab[0].valid){
-      Printf("before dosched");
-      DoSched();
-      Printf("after dosched");
-      return proctab[0].pid;
+    if( !empty(&pid_queue) ){
+      Printf("Scheduling Proc\n");
+      print_queue(&pid_queue);
+      lifo_pid = lifo_dequeue(&pid_queue);
+      return lifo_pid;
     }
     break;
 
