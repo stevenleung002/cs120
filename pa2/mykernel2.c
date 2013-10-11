@@ -164,7 +164,7 @@ int StartingProc (pid)
       break;
 
     case FIFO:
-      Printf("Starting Proc %d", pid);
+      Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
       return (1);
 
