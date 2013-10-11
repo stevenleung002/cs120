@@ -251,7 +251,7 @@ int SchedProc ()
   case FIFO:
     if ( !empty(&pid_queue) ){
       fifo_pid = dequeue(&pid_queue);
-      Printf("Scheduling Proc %d\n", lifo_pid);
+      Printf("Scheduling Proc %d\n", fifo_pid);
       return fifo_pid;
     }
 
