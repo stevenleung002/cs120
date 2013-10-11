@@ -114,7 +114,10 @@ void delete_pid(queue *q, int pid)
     {
       if(q->q[i] == pid)
       {
-        q->q[i] = q->q[i+1];
+        while(i <= q->last)
+        {
+          q->q[i] = q->q[i+1];
+        }
         q->last = (q->last - 1) % QUEUESIZE;
         q->count = q->count -1;
       }
