@@ -125,7 +125,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (LIFO);   /* set policy here */
+    SetSchedPolicy (FIFO);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
@@ -174,6 +174,7 @@ int StartingProc (pid)
     case LIFO:
       Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
+      print_queue(&pid_queue)
       return (1);
 
       break;
