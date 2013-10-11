@@ -123,6 +123,7 @@ void delete_pid(queue *q, int pid)
         q->count = q->count -1;
       }
     }
+    Printf("deleted %d", pid);
   }
 }
 
