@@ -134,13 +134,13 @@ void Main ()
 
 			/* Process 4 */
 			RequestCPUrate (1, 10);
-			SlowPrintf (7, "444444444444444444");
+			SlowPrintf (5, "444444444444444444");
 			Exit ();
 		}
 
 		/* Process 2 */
 		RequestCPUrate (3, 10);
-		SlowPrintf (7, "222222222222222222");
+		SlowPrintf (5, "222222222222222222");
 		Exit ();
 	}
 
@@ -148,12 +148,12 @@ void Main ()
 
 		/* Process 3 */
 		RequestCPUrate (2, 10);
-		SlowPrintf (7, "333333333333333333");
+		SlowPrintf (5, "333333333333333333");
 		Exit ();
 	}
 
 	/* Process 1 */
 	RequestCPUrate (4, 10);
-	SlowPrintf (7, "111111111111111111");
+	SlowPrintf (5, "111111111111111111");
 	Exit ();
 }
