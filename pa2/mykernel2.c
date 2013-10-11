@@ -261,6 +261,7 @@ int EndingProc (pid)
 
     case ROUNDROBIN:
       delete_pid(&pid_queue, pid);
+      Printf("exit %d", pid);
       return(1);
       break;
   }
