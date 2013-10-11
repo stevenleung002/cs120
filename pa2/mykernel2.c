@@ -78,6 +78,12 @@ int lifo_dequeue(queue *q)
   return(x);
 }
 
+int get_queue_last(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->last ];
+}
+
 int empty(queue *q)
 {
   if (q->count <= 0) return 1;
@@ -174,6 +180,7 @@ int EndingProc (pid)
   for (i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid && proctab[i].pid == pid) {
       proctab[i].valid = 0;
+      lifo_dequeue(&pid_queue);
       return (1);
     }
   }
@@ -217,7 +224,7 @@ int SchedProc ()
 
   case LIFO:
     if( !empty(&pid_queue) ){
-      lifo_pid = lifo_dequeue(&pid_queue);
+      lifo_pid = get_queue_last(&queue);
       return lifo_pid;
     }
     break;
