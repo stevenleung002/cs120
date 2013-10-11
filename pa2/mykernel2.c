@@ -174,7 +174,6 @@ int StartingProc (pid)
     case LIFO:
       Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
-      DoSched();
       return (1);
 
       break;
@@ -261,6 +260,7 @@ int SchedProc ()
   case LIFO:
     if( !empty(&pid_queue) ){
       lifo_pid = get_queue_last(&pid_queue);
+      DoSched();
       Printf("Scheduling Proc %d\n", lifo_pid);
       return lifo_pid;
     }
