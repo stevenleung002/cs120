@@ -121,7 +121,9 @@ void delete_pid(queue *q, int pid)
         {
           Printf(" i: %d ", i);
           q->q[i] = q->q[i+1];
+          i++;
         }
+        Printf(" jump out of while");
         q->last = (q->last - 1) % QUEUESIZE;
         q->count = q->count -1;
       }
