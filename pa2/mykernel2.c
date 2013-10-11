@@ -199,12 +199,26 @@ int EndingProc (pid)
 {
   int i;
 
-  for (i = 0; i < MAXPROCS; i++) {
-    if (proctab[i].valid && proctab[i].pid == pid) {
-      proctab[i].valid = 0;
-      lifo_dequeue(&pid_queue);
+  switch (GetSchedPolicy ()) {
+    case ARBITRARY:
+      for (i = 0; i < MAXPROCS; i++) {
+        if (proctab[i].valid && proctab[i].pid == pid) {
+          proctab[i].valid = 0;
+          return (1);
+        }
+      }
+
+      break;
+
+    case FIFO:
       return (1);
-    }
+      break;
+
+    case LIFO:
+      lifo_dequeue(&pid_queue);
+      return(1);
+
+      break;
   }
 
   Printf ("Error in EndingProc: can't find process %d\n", pid);
