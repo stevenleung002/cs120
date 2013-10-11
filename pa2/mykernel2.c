@@ -294,6 +294,7 @@ int SchedProc ()
   case ROUNDROBIN:
     if ( !empty(&pid_queue) ){
       ror_pid = get_queue_next(&pid_queue);
+      Printf("Scheduling Proc %d\n", ror_pid);
       SetTimer(TIMERINTERVAL);
       return ror_pid;
     }
