@@ -155,7 +155,7 @@ int StartingProc (pid)
       proctab[i].valid = 1;
       proctab[i].pid = pid;
       Printf("Starting Proc ");
-      print_queue(&q);
+      print_queue(&pid_queue);
       enqueue(&pid_queue, pid);
       DoSched();
       return (1);
