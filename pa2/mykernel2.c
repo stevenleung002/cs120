@@ -20,7 +20,58 @@
 static struct {
   int valid;    /* is this entry valid: 1 = yes, 0 = no */
   int pid;    /* process id (as provided by kernel) */
+  double requested;
+  double utilization;
+  long alive_slot;
+  long ran_slot;
 } proctab[MAXPROCS];
+
+void set_requested_ratio(int pid, int m, int n){
+  for (int i = 0; i < MAXPROCS; i++) {
+    if (proctab[i].valid == 0){
+      return;
+    }
+    else if(proctab[i].pid == pid) {
+      proctab[i].requested = m / n;
+      return;
+    }
+    else{
+      continue;
+    }
+  }
+}
+
+void refresh_slot(pid)
+{
+  for (int i = 0; i < MAXPROCS; i++) {
+    if (proctab[i].valid == 0){
+      return;
+    }
+    else{
+      proctab[i].alive_slot += 1;
+    }
+    proctab[i].utilization = proctab[i].ran_slot / proctab[i].alive_slot;
+  }
+}
+
+int get_unfair_pid()
+{
+  int unfair_pid = 0;
+  double smallest_compute_ratio = 2;
+
+  for(int i = 0; i < MAXPROCS; i++){
+    double ratio = proctab[i].utilization / proctab[i].requested;
+    if (proctab[i].valid == 0){
+      return 0;
+    }
+    else if( ratio < smallest_compute_ratio){
+      smallest_compute_ratio = ratio;
+      unfair_pid = proctab[i].pid;
+      proctab[i].ran_slot += 1;
+    }
+  }
+  return unfair_pid;
+}
 
 typedef struct{
   int q[QUEUESIZE -1];
@@ -227,6 +278,20 @@ int StartingProc (pid)
       return (1);
 
       break;
+
+    case PROPORTIONAL:
+
+      for (i = 0; i < MAXPROCS; i++) {
+        if (! proctab[i].valid) {
+          proctab[i].valid = 1;
+          proctab[i].pid = pid;
+          proctab[i].ran_slot = 0;
+          proctab[i].alive_slot = 0;
+          return (1);
+        }
+      }
+      break;
+
   }
 
 
@@ -275,6 +340,14 @@ int EndingProc (pid)
       Printf("exit %d", pid);
       return(1);
       break;
+
+    case PROPORTIONAL:
+      for (i = 0; i < MAXPROCS; i++) {
+        if (proctab[i].valid && proctab[i].pid == pid) {
+          proctab[i].valid = 0;
+          return (1);
+        }
+      }
   }
 
   Printf ("Error in EndingProc: can't find process %d\n", pid);
@@ -295,6 +368,8 @@ int SchedProc ()
   int fifo_pid;
   int lifo_pid;
   int ror_pid;
+  int current_pid;
+  int prop_pid;
 
   switch (GetSchedPolicy ()) {
 
@@ -332,9 +407,10 @@ int SchedProc ()
     break;
 
   case PROPORTIONAL:
-
-    /* your code here */
-
+    current_pid = GetCurProc();
+    refresh_slot(current_pid);
+    prop_pid = get_unfair_pid();
+    return prop_pid;
     break;
 
   }
@@ -383,6 +459,11 @@ int MyRequestCPUrate (pid, m, n)
   int n;
 {
   /* your code here */
-
+  if (m < 1 || n < 1 || m > n){
+    return -1
+  }
+  else{
+    set_requested_ratio(pid, m, n);
+  }
   return (0);
 }
