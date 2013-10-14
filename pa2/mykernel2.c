@@ -69,6 +69,7 @@ int get_unfair_pid()
     else if( ratio < smallest_compute_ratio){
       smallest_compute_ratio = ratio;
       unfair_pid = proctab[i].pid;
+      Printf("unfair_pid %d \n", unfair_pid);
       proctab[i].ran_slot += 1;
     }
   }
