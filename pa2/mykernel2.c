@@ -280,7 +280,7 @@ int StartingProc (pid)
       break;
 
     case PROPORTIONAL:
-
+      Printf("Starting Proc %d\n", pid);
       for (i = 0; i < MAXPROCS; i++) {
         if (! proctab[i].valid) {
           proctab[i].valid = 1;
