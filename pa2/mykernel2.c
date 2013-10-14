@@ -41,7 +41,7 @@ void set_requested_ratio(int pid, int m, int n){
   }
 }
 
-void refresh_slot(int pid)
+void refresh_slot()
 {
   for (int i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid == 0){
@@ -407,10 +407,11 @@ int SchedProc ()
     break;
 
   case PROPORTIONAL:
-    current_pid = GetCurProc();
-    refresh_slot(current_pid);
+    Printf("Scheduling Proc \n");
+    refresh_slot();
     prop_pid = get_unfair_pid();
     return prop_pid;
+
     break;
 
   }
