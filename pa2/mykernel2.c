@@ -64,7 +64,7 @@ int get_unfair_pid()
     Printf("proc %d \n", proctab[i].pid);
 
     if (proctab[i].valid == 0){
-      return 0;
+      return unfair_pid;
     }
     else if( ratio < smallest_compute_ratio){
       smallest_compute_ratio = ratio;
