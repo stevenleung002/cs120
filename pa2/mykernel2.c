@@ -41,7 +41,7 @@ void set_requested_ratio(int pid, int m, int n){
   }
 }
 
-void refresh_slot(pid)
+void refresh_slot(int pid)
 {
   for (int i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid == 0){
@@ -460,7 +460,7 @@ int MyRequestCPUrate (pid, m, n)
 {
   /* your code here */
   if (m < 1 || n < 1 || m > n){
-    return -1
+    return -1;
   }
   else{
     set_requested_ratio(pid, m, n);
