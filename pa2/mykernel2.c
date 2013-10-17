@@ -214,7 +214,7 @@ int get_unfair_pid()
             enqueue(&pid_queue, i);
           }
         }
-        double distribute_ratio = (1.0 - requested_ratio) / pid_queue->count
+        double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count
         int return_pid = proctab[get_queue_first(&pid_queue)].pid;
         while(!empty(&pid_queue))
           int pid = dequeue(&pid_queue);
