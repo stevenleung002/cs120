@@ -14,109 +14,8 @@
 #define TIMERINTERVAL 1  /* in ticks (tick = 10 msec) */
 
 #define QUEUESIZE 1000
-/*  A sample process table.  You may change this any way you wish.
- */
-static double requested_ratio = 0;
 
-static struct {
-  int valid;    /* is this entry valid: 1 = yes, 0 = no */
-  int pid;    /* process id (as provided by kernel) */
-  int stoped; /* check whether process stoped, 1 = yes, 0 = no*/
-  double requested; /* requested cpu ratio*/
-  double utilization; /* utiliaztion ratio */
-  long alive_slot; /* process alive slot count */
-  long ran_slot; /* process ran slot*/
-  int has_requested_ratio;
-} proctab[MAXPROCS];
-
-/* every time, MyRequestCPUrate is called, we set that process's request ratio */
-void set_requested_ratio(int pid, int m, int n){
-  for (int i = 0; i < MAXPROCS; i++) {
-    if (proctab[i].valid == 0){
-      return;
-    }
-    else if(proctab[i].pid == pid) {
-      double request = (double)m / n;
-      requested_ratio += request;
-      if(requested_ratio < 1){
-        proctab[i].requested = request;
-        proctab[i].has_requested_ratio = 1;
-        return;
-      }
-      else{
-        requested_ratio -= request;
-        return;
-      }
-    }
-    else{
-      continue;
-    }
-  }
-}
-
-/* every time SchedProc invoked, we refresh every started process's utilization*/
-void refresh_slot()
-{
-  for (int i = 0; i < MAXPROCS; i++) {
-    if (proctab[i].valid == 0){
-      return;
-    }
-    else if(proctab[i].has_requested_ratio == 1){
-      proctab[i].alive_slot += 1;
-      proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
-    }
-  }
-}
-
-/* calculate which process is the unfair treated one*/
-int get_unfair_pid()
-{
-  int unfair_pid = 0;
-  int unfair_pid_index = 0;
-  double smallest_compute_ratio = 1000;
-
-  for(int i = 0; i < MAXPROCS; i++){
-    if (proctab[i].stoped == 1) continue;
-
-    double ratio = proctab[i].utilization / proctab[i].requested;
-
-    if(ratio != ratio)
-      ratio = 0;
-
-    if (proctab[i].valid == 0){
-      if(smallest_compute_ratio >= 1){
-        for(int i = 0; i < MAXPROCS; i++){
-          if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
-            enqueue(&pid_queue, i);
-          }
-        }
-        double distribute_ratio = (1.0 - requested_ratio) / pid_queue->count
-        int return_pid = proctab[get_queue_first(&pid_queue)].pid;
-        while(!empty(&pid_queue))
-          int pid = dequeue(&pid_queue);
-          proctab[pid].requested_ratio = distribute_ratio;
-          proctab[pid].has_requested_ratio = 1;
-        }
-        return return_pid;
-      }
-
-      proctab[unfair_pid_index].ran_slot += 1;
-      double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
-      proctab[unfair_pid_index].utilization = utilization;
-
-      return unfair_pid;
-    }
-    else if( ratio < smallest_compute_ratio){
-      smallest_compute_ratio = ratio;
-      unfair_pid = proctab[i].pid;
-      unfair_pid_index = i;
-    }
-  }
-
-  return unfair_pid;
-}
-
-/* queue is for LIFO FIFO RoundRobin */
+ /* queue is for LIFO FIFO RoundRobin */
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -239,6 +138,109 @@ void print_queue(queue *q)
   Printf("%2d ",q->q[i]);
   Printf("\n");
 }
+/*  A sample process table.  You may change this any way you wish.
+ */
+static double requested_ratio = 0;
+
+static struct {
+  int valid;    /* is this entry valid: 1 = yes, 0 = no */
+  int pid;    /* process id (as provided by kernel) */
+  int stoped; /* check whether process stoped, 1 = yes, 0 = no*/
+  double requested; /* requested cpu ratio*/
+  double utilization; /* utiliaztion ratio */
+  long alive_slot; /* process alive slot count */
+  long ran_slot; /* process ran slot*/
+  int has_requested_ratio;
+} proctab[MAXPROCS];
+
+/* every time, MyRequestCPUrate is called, we set that process's request ratio */
+void set_requested_ratio(int pid, int m, int n){
+  for (int i = 0; i < MAXPROCS; i++) {
+    if (proctab[i].valid == 0){
+      return;
+    }
+    else if(proctab[i].pid == pid) {
+      double request = (double)m / n;
+      requested_ratio += request;
+      if(requested_ratio < 1){
+        proctab[i].requested = request;
+        proctab[i].has_requested_ratio = 1;
+        return;
+      }
+      else{
+        requested_ratio -= request;
+        return;
+      }
+    }
+    else{
+      continue;
+    }
+  }
+}
+
+/* every time SchedProc invoked, we refresh every started process's utilization*/
+void refresh_slot()
+{
+  for (int i = 0; i < MAXPROCS; i++) {
+    if (proctab[i].valid == 0){
+      return;
+    }
+    else if(proctab[i].has_requested_ratio == 1){
+      proctab[i].alive_slot += 1;
+      proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
+    }
+  }
+}
+
+/* calculate which process is the unfair treated one*/
+int get_unfair_pid()
+{
+  int unfair_pid = 0;
+  int unfair_pid_index = 0;
+  double smallest_compute_ratio = 1000;
+
+  for(int i = 0; i < MAXPROCS; i++){
+    if (proctab[i].stoped == 1) continue;
+
+    double ratio = proctab[i].utilization / proctab[i].requested;
+
+    if(ratio != ratio)
+      ratio = 0;
+
+    if (proctab[i].valid == 0){
+      if(smallest_compute_ratio >= 1){
+        for(int i = 0; i < MAXPROCS; i++){
+          if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
+            enqueue(&pid_queue, i);
+          }
+        }
+        double distribute_ratio = (1.0 - requested_ratio) / pid_queue->count
+        int return_pid = proctab[get_queue_first(&pid_queue)].pid;
+        while(!empty(&pid_queue))
+          int pid = dequeue(&pid_queue);
+          proctab[pid].requested_ratio = distribute_ratio;
+          proctab[pid].has_requested_ratio = 1;
+        }
+        return return_pid;
+      }
+
+      proctab[unfair_pid_index].ran_slot += 1;
+      double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
+      proctab[unfair_pid_index].utilization = utilization;
+
+      return unfair_pid;
+    }
+    else if( ratio < smallest_compute_ratio){
+      smallest_compute_ratio = ratio;
+      unfair_pid = proctab[i].pid;
+      unfair_pid_index = i;
+    }
+  }
+
+  return unfair_pid;
+}
+
+
 /*  InitSched () is called when kernel starts up.  First, set the
  *  scheduling policy (see sys.h).  Make sure you follow the rules
  *  below on where and how to set it.  Next, initialize all your data
