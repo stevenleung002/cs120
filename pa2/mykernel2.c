@@ -84,6 +84,9 @@ int get_unfair_pid()
       ratio = 0;
 
     if (proctab[i].valid == 0){
+      if(smallest_compute_ratio >= 1)
+        Printf('need to yield');
+
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
       proctab[unfair_pid_index].utilization = utilization;
