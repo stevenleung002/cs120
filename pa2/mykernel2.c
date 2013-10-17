@@ -60,6 +60,8 @@ void refresh_slot()
 int get_unfair_pid()
 {
   int unfair_pid = 1;
+  int unfair_pid_index = 0;
+
   double smallest_compute_ratio = 2;
 
   for(int i = 0; i < MAXPROCS; i++){
@@ -80,13 +82,16 @@ int get_unfair_pid()
     else if( ratio < smallest_compute_ratio){
       smallest_compute_ratio = ratio;
       unfair_pid = proctab[i].pid;
-      proctab[i].ran_slot += 1;
-      double utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
-      proctab[i].utilization = utilization;
-      Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[i].utilization);
+      unfair_pid_index = i;
     }
   }
+
   Printf("unfair_pid %d \n", unfair_pid);
+  proctab[unfair_pid_index].ran_slot += 1;
+  double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
+  proctab[unfair_pid_index].utilization = utilization;
+  Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[unfair_pid_index].utilization);
+
   return unfair_pid;
 }
 
