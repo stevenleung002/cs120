@@ -60,7 +60,7 @@ void refresh_slot()
 
 int get_unfair_pid()
 {
-  int unfair_pid = 1;
+  int unfair_pid = 0;
   int unfair_pid_index = 0;
 
   double smallest_compute_ratio = 1000;
