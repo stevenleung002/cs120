@@ -29,43 +29,6 @@ static struct {
   int has_requested_ratio;
 } proctab[MAXPROCS];
 
-struct node
-{
-  struct node *previous;
-  struct node *next;
-  int valid;    /* is this entry valid: 1 = yes, 0 = no */
-  int pid;    /* process id (as provided by kernel) */
-  int stoped; /* check whether process stoped, 1 = yes, 0 = no*/
-  double requested; /* requested cpu ratio*/
-  double utilization; /* utiliaztion ratio */
-  long alive_slot; /* process alive slot count */
-  long ran_slot; /* process ran slot*/
-  int has_requested_ratio;
-};
-
-static struct node *head;
-
-void insert_begning(struct node *var)
-{
-  struct node *temp;
-   if(head==NULL)
-   {
-       head=var;
-       head->previous=NULL;
-       head->next=NULL;
-       last=head;
-   }
-   else
-   {
-       temp=var;
-       temp->previous=NULL;
-       temp->next=head;
-       head->previous=temp;
-       head=temp;
-   }
-}
-
-
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
 void set_requested_ratio(int pid, int m, int n){
   for (int i = 0; i < MAXPROCS; i++) {
@@ -94,14 +57,15 @@ void set_requested_ratio(int pid, int m, int n){
 /* every time SchedProc invoked, we refresh every started process's utilization*/
 void refresh_slot()
 {
+  int no_request
   for (int i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid == 0){
       return;
     }
-    else{
+    else if(proctab[i].has_requested_ratio == 1){
       proctab[i].alive_slot += 1;
+      proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
     }
-    proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
   }
 }
 
@@ -110,7 +74,6 @@ int get_unfair_pid()
 {
   int unfair_pid = 0;
   int unfair_pid_index = 0;
-
   double smallest_compute_ratio = 1000;
 
   for(int i = 0; i < MAXPROCS; i++){
@@ -340,16 +303,6 @@ int StartingProc (pid)
       break;
 
     case PROPORTIONAL:
-      struct node *p;
-      p = (struct node *)malloc(sizeof(struct node));
-      p.valid = 1;
-      p.stoped = 0;
-      p.pid = pid;
-      p.ran_slot = 0;
-      p.alive_slot = 0;
-      p.has_requested_ratio = 0;
-      insert_begning(p);
-
       for (i = 0; i < MAXPROCS; i++) {
         if (! proctab[i].valid) {
           proctab[i].valid = 1;
@@ -416,6 +369,7 @@ int EndingProc (pid)
         if (proctab[i].valid && proctab[i].pid == pid) {
           proctab[i].valid = 0;
           proctab[i].stoped = 1;
+          requested_ratio -= proctab[i].requested;
           return (1);
         }
       }
