@@ -81,7 +81,7 @@ int get_unfair_pid()
       Printf("unfair_pid %d \n", unfair_pid);
       proctab[i].ran_slot += 1;
       proctab[i].utilization = proctab[i].ran_slot / proctab[i].alive_slot;
-
+      Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[i].utilization);
     }
   }
 
