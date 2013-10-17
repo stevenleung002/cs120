@@ -16,6 +16,7 @@
 #define QUEUESIZE 1000
 /*  A sample process table.  You may change this any way you wish.
  */
+static requested_ratio = 0;
 
 static struct {
   int valid;    /* is this entry valid: 1 = yes, 0 = no */
@@ -25,6 +26,7 @@ static struct {
   double utilization; /* utiliaztion ratio */
   long alive_slot; /* process alive slot count */
   long ran_slot; /* process ran slot*/
+  int has_requested_ratio;
 } proctab[MAXPROCS];
 
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
@@ -35,8 +37,16 @@ void set_requested_ratio(int pid, int m, int n){
     }
     else if(proctab[i].pid == pid) {
       double request = (double)m / n;
-      proctab[i].requested = request;
-      return;
+      requested_ratio += request;
+      if(requested_ratio < 1){
+        proctab[i].requested = request;
+        proctab[i].has_requested_ratio = 1;
+        return;
+      }
+      else{
+        requested_ratio -= request;
+        return;
+      }
     }
     else{
       continue;
@@ -300,6 +310,7 @@ int StartingProc (pid)
           proctab[i].pid = pid;
           proctab[i].ran_slot = 0;
           proctab[i].alive_slot = 0;
+          proctab[i].has_requested_ratio = 0;
           return (1);
         }
       }
