@@ -20,6 +20,7 @@
 static struct {
   int valid;    /* is this entry valid: 1 = yes, 0 = no */
   int pid;    /* process id (as provided by kernel) */
+  int stoped;
   double requested;
   double utilization;
   long alive_slot;
@@ -76,7 +77,7 @@ int get_unfair_pid()
     //  Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
     }
 
-    if (proctab[i].valid == 0){
+    if (proctab[i].valid == 0 && proctab[i].valid == 0){
     //  Printf("unfair_pid %d \n", unfair_pid);
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
@@ -247,6 +248,7 @@ void InitSched ()
   /* Initialize all your data structures here */
   for (i = 0; i < MAXPROCS; i++) {
     proctab[i].valid = 0;
+    proctab[i].stoped = 0;
   }
   /* Initialize FIFO Queue; */
   init_queue(&pid_queue);
@@ -367,6 +369,7 @@ int EndingProc (pid)
       for (i = 0; i < MAXPROCS; i++) {
         if (proctab[i].valid && proctab[i].pid == pid) {
           proctab[i].valid = 0;
+          proctab[i].stoped = 1;
           Printf("proc %d ending", proctab[i].pid);
           return (1);
         }
@@ -430,11 +433,11 @@ int SchedProc ()
     break;
 
   case PROPORTIONAL:
-    Printf("\n Scheduling Proc \n");
+   // Printf("\n Scheduling Proc \n");
     refresh_slot();
-    Printf("refreshed Proc slot \n");
+   // Printf("refreshed Proc slot \n");
     prop_pid = get_unfair_pid();
-    Printf("scheduling Proc %d \n", prop_pid);
+   // Printf("scheduling Proc %d \n", prop_pid);
     return prop_pid;
 
     break;
