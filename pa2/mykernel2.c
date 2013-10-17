@@ -219,7 +219,7 @@ int get_unfair_pid()
 
         while(!empty(&pid_queue)){
           int pid = dequeue(&pid_queue);
-          proctab[pid].requested_ratio = distribute_ratio;
+          proctab[pid].requested = distribute_ratio;
           proctab[pid].has_requested_ratio = 1;
         }
         return return_pid;
