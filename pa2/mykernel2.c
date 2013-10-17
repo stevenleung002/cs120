@@ -33,6 +33,7 @@ void set_requested_ratio(int pid, int m, int n){
     }
     else if(proctab[i].pid == pid) {
       proctab[i].requested = m / n;
+      Printf("set %d requested %f", pid, m/n);
       return;
     }
     else{
