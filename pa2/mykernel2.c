@@ -41,7 +41,9 @@ struct node
   long alive_slot; /* process alive slot count */
   long ran_slot; /* process ran slot*/
   int has_requested_ratio;
-}*head, *last;
+};
+
+static struct node *head;
 
 void insert_begning(struct node *var)
 {
