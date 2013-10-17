@@ -34,7 +34,7 @@ void set_requested_ratio(int pid, int m, int n){
     else if(proctab[i].pid == pid) {
       double request = (double)m / n;
       proctab[i].requested = request;
-      Printf("set %d requested %f \n", pid, request);
+     // Printf("set %d requested %f \n", pid, request);
       return;
     }
     else{
@@ -52,7 +52,7 @@ void refresh_slot()
     else{
       proctab[i].alive_slot += 1;
     }
-    Printf("utilization of proc %d is %f, requested is %f\n", proctab[i].pid, proctab[i].utilization, proctab[i].requested);
+   // Printf("utilization of proc %d is %f, requested is %f\n", proctab[i].pid, proctab[i].utilization, proctab[i].requested);
     proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
   }
 }
@@ -71,17 +71,17 @@ int get_unfair_pid()
       ratio = 0;
 
     if(proctab[i].valid == 1 ){
-      Printf("requested %f \n", proctab[i].requested);
-      Printf("utilization %f \n", proctab[i].utilization);
-      Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
+    //  Printf("requested %f \n", proctab[i].requested);
+    //  Printf("utilization %f \n", proctab[i].utilization);
+    //  Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
     }
 
     if (proctab[i].valid == 0){
-      Printf("unfair_pid %d \n", unfair_pid);
+    //  Printf("unfair_pid %d \n", unfair_pid);
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
       proctab[unfair_pid_index].utilization = utilization;
-      Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[unfair_pid_index].utilization);
+    //  Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[unfair_pid_index].utilization);
 
       return unfair_pid;
     }
