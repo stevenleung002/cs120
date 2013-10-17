@@ -236,7 +236,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (ROUNDROBIN);   /* set policy here */
+    SetSchedPolicy (LIFO);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
