@@ -218,10 +218,12 @@ int get_unfair_pid()
         int return_pid = proctab[get_queue_first(&pid_queue)].pid;
 
         while(pid_queue.count > 1){
+          Printf("222");
           int pid = dequeue(&pid_queue);
           proctab[pid].requested = distribute_ratio;
           proctab[pid].has_requested_ratio = 1;
         }
+        Printf("333");
         return return_pid;
       }
 
