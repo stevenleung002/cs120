@@ -52,7 +52,7 @@ void refresh_slot()
     else{
       proctab[i].alive_slot += 1;
     }
-    Printf("utilization of proc %d is %f", proctab[i].pid, proctab[i].utilization);
+    Printf("utilization of proc %d is %f, requested is %f\n", proctab[i].pid, proctab[i].utilization, proctab[i].requested);
     proctab[i].utilization = proctab[i].ran_slot / proctab[i].alive_slot;
   }
 }
