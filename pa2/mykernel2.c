@@ -43,9 +43,9 @@ struct node
   int has_requested_ratio;
 }*head, *last;
 
-void insert_begning(node *var)
+void insert_begning(struct node *var)
 {
-  struct *temp;
+  struct node *temp;
    if(head==NULL)
    {
        head=var;
