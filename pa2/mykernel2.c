@@ -36,7 +36,6 @@ void set_requested_ratio(int pid, int m, int n){
     else if(proctab[i].pid == pid) {
       double request = (double)m / n;
       proctab[i].requested = request;
-      proctab[i].have_request_ratio = 1;
       return;
     }
     else{
