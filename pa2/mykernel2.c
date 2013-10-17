@@ -16,7 +16,7 @@
 #define QUEUESIZE 1000
 /*  A sample process table.  You may change this any way you wish.
  */
-static requested_ratio = 0;
+static double requested_ratio = 0;
 
 static struct {
   int valid;    /* is this entry valid: 1 = yes, 0 = no */
