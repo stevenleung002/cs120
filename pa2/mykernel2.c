@@ -88,7 +88,7 @@ int get_unfair_pid()
         Printf("need to yield\n");
         for(int i = 0; i < MAXPROCS; i++){
           if(proctab[i].has_requested_ratio == 0){
-            return proctab[i];
+            return proctab[i].pid;
           }
         }
       }
