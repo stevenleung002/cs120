@@ -216,7 +216,8 @@ int get_unfair_pid()
         }
         double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
         int return_pid = proctab[get_queue_first(&pid_queue)].pid;
-        while(!empty(&pid_queue))
+
+        while(!empty(&pid_queue)){
           int pid = dequeue(&pid_queue);
           proctab[pid].requested_ratio = distribute_ratio;
           proctab[pid].has_requested_ratio = 1;
