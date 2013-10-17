@@ -25,6 +25,7 @@ static struct {
   double utilization; /* utiliaztion ratio */
   long alive_slot; /* process alive slot count */
   long ran_slot; /* process ran slot*/
+  int have_request_ratio;
 } proctab[MAXPROCS];
 
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
@@ -36,7 +37,7 @@ void set_requested_ratio(int pid, int m, int n){
     else if(proctab[i].pid == pid) {
       double request = (double)m / n;
       proctab[i].requested = request;
-
+      proctab[i].have_request_ratio = 1;
       return;
     }
     else{
@@ -68,7 +69,7 @@ int get_unfair_pid()
   double smallest_compute_ratio = 1000;
 
   for(int i = 0; i < MAXPROCS; i++){
-    if (proctab[i].stoped == 1) continue;
+    if (proctab[i].stoped == 1 || proctab[i].have_request_ratio == 1) continue;
 
     double ratio = proctab[i].utilization / proctab[i].requested;
 
@@ -76,6 +77,13 @@ int get_unfair_pid()
       ratio = 0;
 
     if (proctab[i].valid == 0){
+      if(smallest_compute_ratio >= 1){
+        for(int t = 0; t < MAXPROCS; t++){
+          if(proctab[t].valid == 1 && proctab[t].have_request_ratio == 0){
+            return t;
+          }
+        }
+      }
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
       proctab[unfair_pid_index].utilization = utilization;
@@ -242,7 +250,6 @@ void InitSched ()
   /* Initialize all your data structures here */
   for (i = 0; i < MAXPROCS; i++) {
     proctab[i].valid = 0;
-    proctab[i].stoped = 0;
   }
   /* Initialize FIFO Queue; */
   init_queue(&pid_queue);
@@ -298,6 +305,8 @@ int StartingProc (pid)
       for (i = 0; i < MAXPROCS; i++) {
         if (! proctab[i].valid) {
           proctab[i].valid = 1;
+          proctab[i].stoped = 0;
+          proctab[i].have_request_ratio = 0;
           proctab[i].pid = pid;
           proctab[i].ran_slot = 0;
           proctab[i].alive_slot = 0;
