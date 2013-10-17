@@ -66,6 +66,8 @@ int get_unfair_pid()
   double smallest_compute_ratio = 2;
 
   for(int i = 0; i < MAXPROCS; i++){
+    if (proctab[i].stoped == 1) continue;
+
     double ratio = proctab[i].utilization / proctab[i].requested;
 
     if(ratio != ratio)
@@ -77,7 +79,7 @@ int get_unfair_pid()
     //  Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
     }
 
-    if (proctab[i].valid == 0 && proctab[i].stoped == 0){
+    if (proctab[i].valid == 0){
     //  Printf("unfair_pid %d \n", unfair_pid);
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
