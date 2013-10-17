@@ -29,6 +29,41 @@ static struct {
   int has_requested_ratio;
 } proctab[MAXPROCS];
 
+struct node
+{
+  struct node *previous;
+  struct node *next;
+  int valid;    /* is this entry valid: 1 = yes, 0 = no */
+  int pid;    /* process id (as provided by kernel) */
+  int stoped; /* check whether process stoped, 1 = yes, 0 = no*/
+  double requested; /* requested cpu ratio*/
+  double utilization; /* utiliaztion ratio */
+  long alive_slot; /* process alive slot count */
+  long ran_slot; /* process ran slot*/
+  int has_requested_ratio;
+}*head, *last;
+
+void insert_begning(node *var)
+{
+  struct *temp;
+   if(head==NULL)
+   {
+       head=var;
+       head->previous=NULL;
+       head->next=NULL;
+       last=head;
+   }
+   else
+   {
+       temp=var;
+       temp->previous=NULL;
+       temp->next=head;
+       head->previous=temp;
+       head=temp;
+   }
+}
+
+
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
 void set_requested_ratio(int pid, int m, int n){
   for (int i = 0; i < MAXPROCS; i++) {
@@ -303,6 +338,16 @@ int StartingProc (pid)
       break;
 
     case PROPORTIONAL:
+      struct node *p;
+      p = (struct node *)malloc(sizeof(struct node));
+      p.valid = 1;
+      p.stoped = 0;
+      p.pid = pid;
+      p.ran_slot = 0;
+      p.alive_slot = 0;
+      p.has_requested_ratio = 0;
+      insert_begning(p);
+
       for (i = 0; i < MAXPROCS; i++) {
         if (! proctab[i].valid) {
           proctab[i].valid = 1;
