@@ -20,13 +20,14 @@
 static struct {
   int valid;    /* is this entry valid: 1 = yes, 0 = no */
   int pid;    /* process id (as provided by kernel) */
-  int stoped;
-  double requested;
-  double utilization;
-  long alive_slot;
-  long ran_slot;
+  int stoped; /* check whether process stoped, 1 = yes, 0 = no*/
+  double requested; /* requested cpu ratio*/
+  double utilization; /* utiliaztion ratio */
+  long alive_slot; /* process alive slot count */
+  long ran_slot; /* process ran slot*/
 } proctab[MAXPROCS];
 
+/* every time, MyRequestCPUrate is called, we set that process's request ratio */
 void set_requested_ratio(int pid, int m, int n){
   for (int i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid == 0){
@@ -35,7 +36,7 @@ void set_requested_ratio(int pid, int m, int n){
     else if(proctab[i].pid == pid) {
       double request = (double)m / n;
       proctab[i].requested = request;
-     // Printf("set %d requested %f \n", pid, request);
+
       return;
     }
     else{
@@ -44,6 +45,7 @@ void set_requested_ratio(int pid, int m, int n){
   }
 }
 
+/* every time SchedProc invoked, we refresh every started process's utilization*/
 void refresh_slot()
 {
   for (int i = 0; i < MAXPROCS; i++) {
@@ -53,11 +55,11 @@ void refresh_slot()
     else{
       proctab[i].alive_slot += 1;
     }
-   // Printf("utilization of proc %d is %f, requested is %f\n", proctab[i].pid, proctab[i].utilization, proctab[i].requested);
     proctab[i].utilization = (double)proctab[i].ran_slot / proctab[i].alive_slot;
   }
 }
 
+/* calculate which process is the unfair treated one*/
 int get_unfair_pid()
 {
   int unfair_pid = 0;
@@ -73,18 +75,10 @@ int get_unfair_pid()
     if(ratio != ratio)
       ratio = 0;
 
-    if(proctab[i].valid == 1 ){
-    //  Printf("requested %f \n", proctab[i].requested);
-    //  Printf("utilization %f \n", proctab[i].utilization);
-    //  Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
-    }
-
     if (proctab[i].valid == 0){
-     // Printf("unfair_pid %d \n", unfair_pid);
       proctab[unfair_pid_index].ran_slot += 1;
       double utilization = (double)proctab[unfair_pid_index].ran_slot / proctab[unfair_pid_index].alive_slot;
       proctab[unfair_pid_index].utilization = utilization;
-     // Printf(" proc %d utilization set to %f\n", unfair_pid, proctab[unfair_pid_index].utilization);
 
       return unfair_pid;
     }
@@ -98,6 +92,7 @@ int get_unfair_pid()
   return unfair_pid;
 }
 
+/* queue is for LIFO FIFO RoundRobin */
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -108,7 +103,7 @@ typedef struct{
 
 static queue pid_queue;
 
-
+// initialize queue
 void init_queue(queue *q)
 {
   q->first = 0;
@@ -117,6 +112,7 @@ void init_queue(queue *q)
   q->pointer = 0;
 }
 
+//insert element to queue
 void enqueue(queue *q, int x)
 {
   if (q->count >= QUEUESIZE)
@@ -128,6 +124,7 @@ void enqueue(queue *q, int x)
   }
 }
 
+//remove element from queue, always the first element
 int dequeue(queue *q)
 {
   int x;
@@ -142,6 +139,7 @@ int dequeue(queue *q)
   return(x);
 }
 
+//remove element from queue, always the last element, like stack
 int lifo_dequeue(queue *q)
 {
   int x;
@@ -155,19 +153,19 @@ int lifo_dequeue(queue *q)
 
   return(x);
 }
-
+// helper method to get last element in queue
 int get_queue_last(queue *q)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   return q->q[ q->last ];
 }
-
+// helper method to get the first element in queue
 int get_queue_first(queue *q)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   return q->q[ q->first ];
 }
-
+// helpter method to get next element in queue
 int get_queue_next(queue *q)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
@@ -175,37 +173,31 @@ int get_queue_next(queue *q)
   q->pointer = (q->pointer + 1) % q->count;
   return q->q[current];
 }
-
+// helpter method to check whether queue is empty or not
 int empty(queue *q)
 {
   if (q->count <= 0) return 1;
   else return 0;
 }
-
+// helper method to delete a specific pid from queue
 void delete_pid(queue *q, int pid)
 {
   if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
   else{
-    Printf("deleting %d", pid);
     for(int i = 0; i < q->count; i++)
     {
-      Printf(" %d ", q->q[i]);
       if(q->q[i] == pid)
       {
-        Printf(" last: %d ", q->last);
         while(i <= q->last)
         {
-          Printf(" i: %d ", i);
           q->q[i] = q->q[i+1];
           i++;
         }
-        Printf(" jump out of while");
         q->last = (q->last - 1) % QUEUESIZE;
         q->pointer = q->last;
         q->count = q->count -1;
       }
     }
-    Printf("deleted %d", pid);
   }
 }
 
@@ -284,14 +276,12 @@ int StartingProc (pid)
       break;
 
     case FIFO:
-      Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
       return (1);
 
       break;
 
     case LIFO:
-      Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
       DoSched();
       return (1);
@@ -299,14 +289,12 @@ int StartingProc (pid)
       break;
 
     case ROUNDROBIN:
-      Printf("Starting Proc %d\n", pid);
       enqueue(&pid_queue, pid);
       return (1);
 
       break;
 
     case PROPORTIONAL:
-      Printf("Starting Proc %d\n", pid);
       for (i = 0; i < MAXPROCS; i++) {
         if (! proctab[i].valid) {
           proctab[i].valid = 1;
@@ -363,7 +351,6 @@ int EndingProc (pid)
 
     case ROUNDROBIN:
       delete_pid(&pid_queue, pid);
-      Printf("exit %d", pid);
       return(1);
       break;
 
@@ -372,7 +359,6 @@ int EndingProc (pid)
         if (proctab[i].valid && proctab[i].pid == pid) {
           proctab[i].valid = 0;
           proctab[i].stoped = 1;
-          Printf("proc %d ending", proctab[i].pid);
           return (1);
         }
       }
@@ -413,7 +399,6 @@ int SchedProc ()
   case FIFO:
     if ( !empty(&pid_queue) ){
       fifo_pid = get_queue_first(&pid_queue);
-      Printf("Scheduling Proc %d\n", fifo_pid);
       return fifo_pid;
     }
 
@@ -422,7 +407,6 @@ int SchedProc ()
   case LIFO:
     if( !empty(&pid_queue) ){
       lifo_pid = get_queue_last(&pid_queue);
-      Printf("Scheduling Proc %d\n", lifo_pid);
       return lifo_pid;
     }
     break;
