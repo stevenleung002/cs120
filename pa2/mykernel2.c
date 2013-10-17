@@ -63,11 +63,15 @@ int get_unfair_pid()
 
   for(int i = 0; i < MAXPROCS; i++){
     double ratio = proctab[i].utilization / proctab[i].requested;
+    if(ratio != ratio)
+      ratio = 0;
+
     if(proctab[i].valid == 1 ){
       Printf("requested %f \n", proctab[i].requested);
       Printf("utilization %f \n", proctab[i].utilization);
       Printf("proc %d \n", proctab[i].pid);
     }
+
     if (proctab[i].valid == 0){
       return unfair_pid;
     }
