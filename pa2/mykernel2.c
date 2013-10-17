@@ -56,7 +56,7 @@ void refresh_slot()
 
 int get_unfair_pid()
 {
-  int unfair_pid = 0;
+  int unfair_pid = 1;
   double smallest_compute_ratio = 2;
 
   for(int i = 0; i < MAXPROCS; i++){
