@@ -367,7 +367,7 @@ int EndingProc (pid)
       for (i = 0; i < MAXPROCS; i++) {
         if (proctab[i].valid && proctab[i].pid == pid) {
           proctab[i].valid = 0;
-          Printf("proc %d ending", i);
+          Printf("proc %d ending", proctab[i].pid);
           return (1);
         }
       }
