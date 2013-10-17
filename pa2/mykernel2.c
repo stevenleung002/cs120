@@ -87,9 +87,17 @@ int get_unfair_pid()
       if(smallest_compute_ratio >= 1){
         for(int i = 0; i < MAXPROCS; i++){
           if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
-            return proctab[i].pid;
+            enqueue(&pid_queue, i);
           }
         }
+        double distribute_ratio = (1.0 - requested_ratio) / pid_queue->count
+        int return_pid = proctab[get_queue_first(&pid_queue)].pid;
+        while(!empty(&pid_queue))
+          int pid = dequeue(&pid_queue);
+          proctab[pid].requested_ratio = distribute_ratio;
+          proctab[pid].has_requested_ratio = 1;
+        }
+        return return_pid;
       }
 
       proctab[unfair_pid_index].ran_slot += 1;
