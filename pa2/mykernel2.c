@@ -33,7 +33,7 @@ void set_requested_ratio(int pid, int m, int n){
     }
     else if(proctab[i].pid == pid) {
       proctab[i].requested = m / n;
-      Printf("set %d requested %f", pid, m/n);
+      Printf("set %d requested %f \n", pid, m/n);
       return;
     }
     else{
@@ -475,7 +475,7 @@ int MyRequestCPUrate (pid, m, n)
   }
   else{
     set_requested_ratio(pid, m, n);
-    Printf("setup request rate for pid: %d\n", pid);
+    Printf("setup request rate for pid: %d, m: %d, n: %d\n", pid, m, n);
   }
   return (0);
 }
