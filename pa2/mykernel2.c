@@ -63,7 +63,7 @@ int get_unfair_pid()
   int unfair_pid = 1;
   int unfair_pid_index = 0;
 
-  double smallest_compute_ratio = 99;
+  double smallest_compute_ratio = 1000;
 
   for(int i = 0; i < MAXPROCS; i++){
     if (proctab[i].stoped == 1) continue;
