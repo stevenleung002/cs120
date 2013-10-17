@@ -57,7 +57,6 @@ void set_requested_ratio(int pid, int m, int n){
 /* every time SchedProc invoked, we refresh every started process's utilization*/
 void refresh_slot()
 {
-  int no_request
   for (int i = 0; i < MAXPROCS; i++) {
     if (proctab[i].valid == 0){
       return;
