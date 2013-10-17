@@ -476,7 +476,6 @@ int MyRequestCPUrate (pid, m, n)
   }
   else{
     set_requested_ratio(pid, m, n);
-    Printf("setup request rate for pid: %d, m: %d, n: %d\n", pid, m, n);
   }
   return (0);
 }
