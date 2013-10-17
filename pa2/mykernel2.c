@@ -69,7 +69,7 @@ int get_unfair_pid()
   double smallest_compute_ratio = 1000;
 
   for(int i = 0; i < MAXPROCS; i++){
-    if (proctab[i].stoped == 1 || proctab[i].have_request_ratio == 1) continue;
+    if (proctab[i].stoped == 1 || proctab[i].have_request_ratio == 0) continue;
 
     double ratio = proctab[i].utilization / proctab[i].requested;
 
