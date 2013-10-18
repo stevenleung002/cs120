@@ -142,18 +142,6 @@ void print_queue(queue *q)
   Printf("\n");
 }
 
-int CompareDoubles2 (double A, double B)
-{
-   double diff = A - B;
-   double EPSILON = 0.05;
-   if ((diff < EPSILON) && (-diff < EPSILON)){
-     return 1;
-   }
-   else{
-     return 0;
-   }
-}
-
 
 /*
   A sample process table.  You may change this any way you wish.
@@ -169,8 +157,6 @@ static struct {
   long alive_slot; /* process alive slot count */
   long ran_slot; /* process ran slot*/
   int has_requested_ratio;
-  int m;
-  int n;
 } proctab[MAXPROCS];
 
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
@@ -180,15 +166,10 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
-      if (proctab[i].has_requested_ratio == 1){
-        requested_ratio -= proctab[i].requested;
-      }
       double request = (double)m / n;
       requested_ratio += request;
       if(requested_ratio < 1){
         proctab[i].requested = request;
-        proctab[i].m = m;
-        proctab[i].n = n;
         proctab[i].has_requested_ratio = 1;
         return;
       }
@@ -222,7 +203,6 @@ int get_unfair_pid()
 {
   int unfair_pid = 0;
   int unfair_pid_index = 0;
-  int unfair_n;
   double smallest_compute_ratio = 1000;
 
   for(int i = 0; i < MAXPROCS; i++){
@@ -244,7 +224,6 @@ int get_unfair_pid()
       smallest_compute_ratio = ratio;
       unfair_pid = proctab[i].pid;
       unfair_pid_index = i;
-      unfair_n = proctab[i].n;
     }
   }
 
@@ -256,7 +235,7 @@ void manually_set_requested()
   for(int i = 0; i < MAXPROCS; i++){
     if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
       enqueue(&pid_queue, i);
-    //  Printf("enqueue %d \n", proctab[i].pid);
+      Printf("enqueue %d \n", proctab[i].pid);
     }
   }
 
