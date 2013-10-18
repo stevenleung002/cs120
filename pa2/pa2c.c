@@ -133,7 +133,7 @@ void Main ()
 		if (Fork () == 0) {
 
 			/* Process 4 */
-			RequestCPUrate (2, 10);
+			//RequestCPUrate (2, 10);
 			SlowPrintf (6, "444444444444444444");
 			Exit ();
 		}
