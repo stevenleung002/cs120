@@ -146,7 +146,7 @@ int CompareDoubles2 (double A, double B)
 {
    double diff = A - B;
    double EPSILON = 0.05;
-   if (diff < EPSILON) && (-diff < EPSILON){
+   if ((diff < EPSILON) && (-diff < EPSILON)){
      return 1;
    }
    else{
