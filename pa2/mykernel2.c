@@ -241,7 +241,7 @@ void manually_set_requested()
   double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
 
   while(pid_queue.count > 1){
-    int pid = dequeue(&pid_queue);
+    int pid = get_queue_next(&pid_queue);
     proctab[pid].requested = distribute_ratio;
     proctab[pid].has_requested_ratio = 1;
   }
