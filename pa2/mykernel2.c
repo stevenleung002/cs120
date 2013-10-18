@@ -15,7 +15,10 @@
 
 #define QUEUESIZE 1000
 
- /* queue is for LIFO FIFO RoundRobin */
+/*
+  Queue implementation part for LIFO FIFO RoundRobin
+*/
+
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -138,7 +141,10 @@ void print_queue(queue *q)
   Printf("%2d ",q->q[i]);
   Printf("\n");
 }
-/*  A sample process table.  You may change this any way you wish.
+
+
+/*
+  A sample process table.  You may change this any way you wish.
  */
 static double requested_ratio = 0;
 
