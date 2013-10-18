@@ -142,11 +142,16 @@ void print_queue(queue *q)
   Printf("\n");
 }
 
-bool CompareDoubles2 (double A, double B)
+int CompareDoubles2 (double A, double B)
 {
    double diff = A - B;
    double EPSILON = 0.05;
-   return (diff < EPSILON) && (-diff < EPSILON);
+   if (diff < EPSILON) && (-diff < EPSILON){
+     return 1;
+   }
+   else{
+     return 0;
+   }
 }
 
 
@@ -235,7 +240,7 @@ int get_unfair_pid()
 
       return unfair_pid;
     }
-    else if (CompareDoubles2(smallest_compute_ratio, ratio)){
+    else if (CompareDoubles2(smallest_compute_ratio, ratio) == 1){
       if(proctab[i].n < unfair_n){
         unfair_pid = proctab[i].pid;
         unfair_pid_index = i;
