@@ -235,17 +235,15 @@ void manually_set_requested()
   for(int i = 0; i < MAXPROCS; i++){
     if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
       enqueue(&pid_queue, i);
-      Printf("enqueue %d \n", proctab[i].pid);
     }
   }
 
   double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
 
-  for(int i = 0; i < pid_queue.count; i++){
-    int pid_index = get_queue_next(&pid_queue);
-   // Printf("get queue next %d \n", proctab[pid_index].pid);
-    proctab[pid_index].requested = distribute_ratio;
-    proctab[pid_index].has_requested_ratio = 1;
+  while(pid_queue.count > 1){
+    int pid = dequeue(&pid_queue);
+    proctab[pid].requested = distribute_ratio;
+    proctab[pid].has_requested_ratio = 1;
   }
 }
 
@@ -271,7 +269,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (PROPORTIONAL);   /* set policy here */
+    SetSchedPolicy (ROUNDROBIN);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
