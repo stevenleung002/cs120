@@ -166,6 +166,9 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
+      if (proctab[i].has_requested_ratio == 1){
+        requested_ratio -= proctab[i].requested;
+      }
       double request = (double)m / n;
       requested_ratio += request;
       if(requested_ratio < 1){
