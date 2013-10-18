@@ -240,13 +240,6 @@ int get_unfair_pid()
 
       return unfair_pid;
     }
-    else if (CompareDoubles2(smallest_compute_ratio, ratio) == 1){
-      if(proctab[i].n < unfair_n){
-        unfair_pid = proctab[i].pid;
-        unfair_pid_index = i;
-        unfair_n = proctab[i].n;
-      }
-    }
     else if( ratio < smallest_compute_ratio){
       smallest_compute_ratio = ratio;
       unfair_pid = proctab[i].pid;
