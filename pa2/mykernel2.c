@@ -15,10 +15,7 @@
 
 #define QUEUESIZE 1000
 
-/*
-  Queue implementation part for LIFO FIFO RoundRobin
-*/
-
+ /* queue is for LIFO FIFO RoundRobin */
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -141,10 +138,7 @@ void print_queue(queue *q)
   Printf("%2d ",q->q[i]);
   Printf("\n");
 }
-
-
-/*
-  A sample process table.  You may change this any way you wish.
+/*  A sample process table.  You may change this any way you wish.
  */
 static double requested_ratio = 0;
 
@@ -269,7 +263,7 @@ void InitSched ()
    * called, thus leaving the policy to whatever we chose to test.
    */
   if (GetSchedPolicy () == NOSCHEDPOLICY) { /* leave as is */
-    SetSchedPolicy (ROUNDROBIN);   /* set policy here */
+    SetSchedPolicy (PROPORTIONAL);   /* set policy here */
   }
 
   /* Initialize all your data structures here */
