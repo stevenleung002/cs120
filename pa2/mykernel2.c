@@ -182,6 +182,7 @@ void set_requested_ratio(int pid, int m, int n){
     else if(proctab[i].pid == pid) {
       if (proctab[i].has_requested_ratio == 1){
         requested_ratio -= proctab[i].requested;
+        Printf(" deleted ratio: %f\n", requested_ratio);
       }
       double request = (double)m / n;
       requested_ratio += request;
