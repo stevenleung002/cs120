@@ -157,7 +157,6 @@ static struct {
   long alive_slot; /* process alive slot count */
   long ran_slot; /* process ran slot*/
   int has_requested_ratio;
-  int manually_set; // 1 true 0 false
 } proctab[MAXPROCS];
 
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
@@ -167,15 +166,11 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
-      if (proctab[i].has_requested_ratio == 1){
-        requested_ratio -= proctab[i].requested;
-      }
       double request = (double)m / n;
       requested_ratio += request;
       if(requested_ratio < 1){
         proctab[i].requested = request;
         proctab[i].has_requested_ratio = 1;
-        proctab[i].manually_set = 1;
         return;
       }
       else{
@@ -238,22 +233,19 @@ int get_unfair_pid()
 void manually_set_requested()
 {
   for(int i = 0; i < MAXPROCS; i++){
-    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0 && proctab[i].valid == 1){
+    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
       enqueue(&pid_queue, i);
-      //Printf("enqueue %d \n", proctab[i].pid);
+      Printf("enqueue %d \n", proctab[i].pid);
     }
   }
 
   double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
 
-  for(int i = 0; i < pid_queue.count; i++){
-    if(proctab[i].manually_set == 0){
-      int pid_index = get_queue_next(&pid_queue);
-      //Printf("get queue next %d \n", proctab[pid_index].pid);
-      proctab[pid_index].requested = distribute_ratio;
-      proctab[pid_index].has_requested_ratio = 1;
-      proctab[pid_index].manually_set = 1;
-    }
+  while(pid_queue.count > 1){
+    int pid_index = get_queue_next(&pid_queue);
+    Printf("get queue next %d \n", proctab[pid_index].pid);
+    proctab[pid_index].requested = distribute_ratio;
+    proctab[pid_index].has_requested_ratio = 1;
   }
 }
 
@@ -345,7 +337,6 @@ int StartingProc (pid)
           proctab[i].ran_slot = 0;
           proctab[i].alive_slot = 0;
           proctab[i].has_requested_ratio = 0;
-          proctab[i].manually_set = 0;
           return (1);
         }
       }
@@ -465,12 +456,12 @@ int SchedProc ()
     break;
 
   case PROPORTIONAL:
-    //Printf("\n Scheduling Proc \n");
+   // Printf("\n Scheduling Proc \n");
     refresh_slot();
     manually_set_requested();
-    //Printf("refreshed Proc slot \n");
+   // Printf("refreshed Proc slot \n");
     prop_pid = get_unfair_pid();
-    //Printf("scheduling Proc %d \n", prop_pid);
+   // Printf("scheduling Proc %d \n", prop_pid);
     return prop_pid;
 
     break;
