@@ -166,9 +166,6 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
-      if (proctab[i].has_requested_ratio == 1){
-        requested_ratio -= proctab[i].requested;
-      }
       double request = (double)m / n;
       requested_ratio += request;
       if(requested_ratio < 1){
@@ -238,17 +235,15 @@ void manually_set_requested()
   for(int i = 0; i < MAXPROCS; i++){
     if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
       enqueue(&pid_queue, i);
-    //  Printf("enqueue %d \n", proctab[i].pid);
     }
   }
 
   double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
 
-  for(int i = 0; i < pid_queue.count; i++){
-    int pid_index = get_queue_next(&pid_queue);
-   // Printf("get queue next %d \n", proctab[pid_index].pid);
-    proctab[pid_index].requested = distribute_ratio;
-    proctab[pid_index].has_requested_ratio = 1;
+  while(pid_queue.count > 1){
+    int pid = dequeue(&pid_queue);
+    proctab[pid].requested = distribute_ratio;
+    proctab[pid].has_requested_ratio = 1;
   }
 }
 
