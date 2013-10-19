@@ -451,7 +451,7 @@ int SchedProc ()
   case PROPORTIONAL:
    // Printf("\n Scheduling Proc \n");
     refresh_slot();
-    manually_set_requested();
+    //manually_set_requested();
    // Printf("refreshed Proc slot \n");
     prop_pid = get_unfair_pid();
    // Printf("scheduling Proc %d \n", prop_pid);
