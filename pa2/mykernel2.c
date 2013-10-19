@@ -227,7 +227,7 @@ int get_unfair_pid()
 void manually_set_requested()
 {
   for(int i = 0; i < MAXPROCS; i++){
-    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
+    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0 && proctab[i].valid == 1){
       enqueue(&pid_queue, i);
     }
   }
