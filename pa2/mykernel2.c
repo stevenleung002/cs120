@@ -15,7 +15,10 @@
 
 #define QUEUESIZE 1000
 
- /* queue is for LIFO FIFO RoundRobin */
+/*
+  Queue implementation part for LIFO FIFO RoundRobin
+*/
+
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -138,7 +141,10 @@ void print_queue(queue *q)
   Printf("%2d ",q->q[i]);
   Printf("\n");
 }
-/*  A sample process table.  You may change this any way you wish.
+
+
+/*
+  A sample process table.  You may change this any way you wish.
  */
 static double requested_ratio = 0;
 
@@ -160,6 +166,9 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
+      if (proctab[i].has_requested_ratio == 1){
+        requested_ratio -= proctab[i].requested;
+      }
       double request = (double)m / n;
       requested_ratio += request;
       if(requested_ratio < 1){
@@ -227,8 +236,9 @@ int get_unfair_pid()
 void manually_set_requested()
 {
   for(int i = 0; i < MAXPROCS; i++){
-    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0 && proctab[i].valid == 1){
+    if(proctab[i].has_requested_ratio == 0 && proctab[i].stoped == 0){
       enqueue(&pid_queue, i);
+    //  Printf("enqueue %d \n", proctab[i].pid);
     }
   }
 
@@ -236,7 +246,7 @@ void manually_set_requested()
 
   for(int i = 0; i < pid_queue.count; i++){
     int pid_index = get_queue_next(&pid_queue);
-    Printf("get queue next %d \n", proctab[pid_index].pid);
+   // Printf("get queue next %d \n", proctab[pid_index].pid);
     proctab[pid_index].requested = distribute_ratio;
     proctab[pid_index].has_requested_ratio = 1;
   }
@@ -451,7 +461,7 @@ int SchedProc ()
   case PROPORTIONAL:
    // Printf("\n Scheduling Proc \n");
     refresh_slot();
-    //manually_set_requested();
+    manually_set_requested();
    // Printf("refreshed Proc slot \n");
     prop_pid = get_unfair_pid();
    // Printf("scheduling Proc %d \n", prop_pid);
