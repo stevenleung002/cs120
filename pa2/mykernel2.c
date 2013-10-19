@@ -236,9 +236,9 @@ int get_unfair_pid()
       ratio = 0;
 
     if(proctab[i].valid == 1 ){
-    //  Printf("requested %f \n", proctab[i].requested);
-    //  Printf("utilization %f \n", proctab[i].utilization);
-    //  Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
+      Printf("requested %f \n", proctab[i].requested);
+      Printf("utilization %f \n", proctab[i].utilization);
+      Printf("proc %d ran_slot %d, alive_slot %d  \n", proctab[i].pid, proctab[i].ran_slot, proctab[i].alive_slot);
     }
 
 
