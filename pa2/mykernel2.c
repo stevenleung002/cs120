@@ -171,6 +171,7 @@ static struct {
   int has_requested_ratio;
   int m;
   int n;
+  int set_requested_cpu;
 } proctab[MAXPROCS];
 
 /* every time, MyRequestCPUrate is called, we set that process's request ratio */
@@ -191,6 +192,7 @@ void set_requested_ratio(int pid, int m, int n){
         proctab[i].m = m;
         proctab[i].n = n;
         proctab[i].has_requested_ratio = 1;
+        proctab[i].set_requested_cpu = 1;
         Printf("set %d requested %f \n", pid, request);
         return;
       }
@@ -288,9 +290,11 @@ void manually_set_requested()
 
   for(int i = 0; i < pid_queue.count; i++){
     int pid_index = get_queue_next(&pid_queue);
-    Printf("get queue next %d \n", proctab[pid_index].pid);
-    proctab[pid_index].requested = distribute_ratio;
-    proctab[pid_index].has_requested_ratio = 1;
+    if(proctab[pid_index].set_requested_cpu == 0){
+      Printf("get queue next %d \n", proctab[pid_index].pid);
+      proctab[pid_index].requested = distribute_ratio;
+      proctab[pid_index].has_requested_ratio = 1;
+    }
   }
 }
 
@@ -382,6 +386,7 @@ int StartingProc (pid)
           proctab[i].ran_slot = 0;
           proctab[i].alive_slot = 0;
           proctab[i].has_requested_ratio = 0;
+          proctab[i].set_requested_cpu = 0;
           return (1);
         }
       }
