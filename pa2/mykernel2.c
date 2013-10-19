@@ -284,7 +284,7 @@ void manually_set_requested()
 //      Printf("enqueue %d \n", proctab[i].pid);
     }
   }
-  Printf(" current requested ratio: %f\n", requested_ratio);
+  //Printf(" current requested ratio: %f\n", requested_ratio);
   double distribute_ratio = (1.0 - requested_ratio) / pid_queue.count;
  // Printf("distribute_ratio: %f \n", distribute_ratio);
 
