@@ -180,7 +180,7 @@ void set_requested_ratio(int pid, int m, int n){
       return;
     }
     else if(proctab[i].pid == pid) {
-      if (proctab[i].has_requested_ratio == 1){
+      if (proctab[i].has_requested_ratio == 1 && (requested_ratio - proctab[i].requested_ratio) > 0){
         requested_ratio -= proctab[i].requested;
         Printf(" deleted ratio: %f\n", requested_ratio);
       }
