@@ -236,7 +236,7 @@ void manually_set_requested()
 
   for(int i = 0; i < pid_queue.count; i++){
     int pid_index = get_queue_next(&pid_queue);
-   // Printf("get queue next %d \n", proctab[pid_index].pid);
+    Printf("get queue next %d \n", proctab[pid_index].pid);
     proctab[pid_index].requested = distribute_ratio;
     proctab[pid_index].has_requested_ratio = 1;
   }
