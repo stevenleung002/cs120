@@ -77,7 +77,7 @@ int driveRoad (int from, int mph);
 void Main ()
 {
 	if (Fork () == 0) {			/* Car 2 */
-		Delay (901);			/* wait 900 simulated secs */
+		Delay (960);			/* wait 900 simulated secs */
 		driveRoad (EAST, 60);		/* enter from West at 60 mph */
 		Exit ();
 	}
