@@ -22,8 +22,6 @@ typedef struct{
   int count;
 }queue;
 
-static queue pid_queue;
-
 // initialize queue
 void init_queue(queue *q)
 {
@@ -96,6 +94,7 @@ int empty(queue *q)
 static struct {
 	int valid;	/* Is this a valid entry (was sem allocated)? */
 	int value;	/* value of semaphore */
+	queue pid_queue;
 } semtab[MAXSEMS];
 
 
@@ -113,8 +112,6 @@ void InitSem ()
 	for (s = 0; s < MAXSEMS; s++) {		/* mark all sems free */
 		semtab[s].valid = FALSE;
 	}
-
-	init_queue(&pid_queue);
 }
 
 /*	MySeminit (p, v) is called by the kernel whenever the system
@@ -144,7 +141,7 @@ int MySeminit (p, v)
 
 	semtab[s].valid = TRUE;
 	semtab[s].value = v;
-
+	init_queue(&(semtab[s].pid_queue));
 	return (s);
 }
 
@@ -159,7 +156,7 @@ void MyWait (p, s)
 	semtab[s].value--;
 	if (semtab[s].value < 0)
 	{
-		enqueue(&pid_queue, p);
+		enqueue(&(semtab[s].pid_queue), p);
 		Block(p);
 	}
 }
@@ -176,7 +173,7 @@ void MySignal (p, s)
 	semtab[s].value++;
 	if (semtab[s].value >= 0)
 	{
-		int unblock_pid = dequeue(&pid_queue);
+		int unblock_pid = dequeue(&(semtab[s].pid_queue));
 		Unblock(unblock_pid);
 	}
 }
