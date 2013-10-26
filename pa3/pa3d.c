@@ -226,10 +226,16 @@ void driveRoad (from, mph)
 			p = NUMPOS + 1 - i;
 			np = p - 1;
 		}
+
 		Wait (shm.semaphore_list[p]);
+		Printf("process %d set semaphore %d", c, p);
+
 		Delay (3600/mph);
 		ProceedRoad ();
+
 		Signal (shm.semaphore_list[p]);
+		Printf("process %d release semaphore %d", c, p);
+
 		PrintRoad ();
 		Printf ("Car %d moves from %d to %d\n", c, p, np);
 	}
