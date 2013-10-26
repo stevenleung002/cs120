@@ -157,6 +157,7 @@ void MyWait (p, s)
 {
 	/* modify or add code any way you wish */
 	semtab[s].value--;
+	Printf(" semtab's value is %d\n", semtab[s].value);
 	if (semtab[s].value < 0)
 	{
 		Block(p);
