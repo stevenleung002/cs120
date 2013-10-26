@@ -144,8 +144,7 @@ void InitRoad ();
 void driveRoad (int from, int mph);
 
 struct {		/* structure of variables to be shared */
-	int x;		/* example of an integer variable */
-	char y[10];	/* example of an array of character variables */
+	int semaphore_list[10];
 } shm;
 
 static int semaphore_list[10];
@@ -197,9 +196,11 @@ void InitRoad ()
 {
 	/* do any initializations here */
 	int i,sem;
+	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
+
 	for(i = 0; i < NUMPOS; i++){
 		sem = Seminit (0);
-		semaphore_list[i] = sem;
+		shm.semaphore_list[i] = sem;
 	}
 }
 
@@ -225,10 +226,10 @@ void driveRoad (from, mph)
 			p = NUMPOS + 1 - i;
 			np = p - 1;
 		}
-		Wait (semaphore_list[p]);
+		Wait (shm.semaphore_list[p]);
 		Delay (3600/mph);
 		ProceedRoad ();
-		Signal (semaphore_list[p]);
+		Signal (shm.semaphore_list[p]);
 		PrintRoad ();
 		Printf ("Car %d moves from %d to %d\n", c, p, np);
 	}
