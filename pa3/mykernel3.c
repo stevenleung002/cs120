@@ -161,6 +161,7 @@ void MyWait (p, s)
 	{
 		Block(p);
 		enqueue(&pid_queue, p);
+		Printf('enqueue\n');
 	}
 }
 
