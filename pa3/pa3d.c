@@ -199,7 +199,7 @@ void InitRoad ()
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
 	for(i = 0; i < NUMPOS; i++){
-		sem = Seminit (0);
+		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
 }
