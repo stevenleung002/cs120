@@ -148,7 +148,7 @@ struct {		/* structure of variables to be shared */
 	char y[10];	/* example of an array of character variables */
 } shm;
 
-static int[10] semaphore_list;
+static int semaphore_list[10];
 
 
 void Main ()
