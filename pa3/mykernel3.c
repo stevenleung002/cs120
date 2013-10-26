@@ -12,6 +12,7 @@
 
 #define FALSE 0
 #define TRUE 1
+#define QUEUESIZE 1000
 
 typedef struct{
   int q[QUEUESIZE -1];
