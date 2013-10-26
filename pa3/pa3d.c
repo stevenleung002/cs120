@@ -48,7 +48,7 @@
  *	car to enter and exit.  (However, if there are no cars waiting at one
  *	end, then as cars arrive at the other end, they should be allowed to
  *	enter the road immediately.)
- *	
+ *
  *	F. If the road is free (no cars), then any car attempting to enter
  *	should not be prevented from doing so.
  *
@@ -66,7 +66,7 @@
  * obeys the rules above.
  *
  * IMPLEMENTATION GUIDELINES
- * 
+ *
  * 1. Avoid busy waiting. In class one of the reasons given for using
  * semaphores was to avoid busy waiting in user code and limit it to
  * minimal use in certain parts of the kernel. This is because busy
@@ -143,6 +143,14 @@
 void InitRoad ();
 void driveRoad (int from, int mph);
 
+struct {		/* structure of variables to be shared */
+	int x;		/* example of an integer variable */
+	char y[10];	/* example of an array of character variables */
+} shm;
+
+static int[10] semaphore_list;
+
+
 void Main ()
 {
 	InitRoad ();
@@ -156,23 +164,23 @@ void Main ()
 	 * So, you should do any initializations in InitRoad.
 	 */
 
-	if (Fork () == 0) {			/* Car 2 */
-		Delay (1162);
-		driveRoad (WEST, 60);
-		Exit ();
-	}
+//	if (Fork () == 0) {			/* Car 2 */
+//		Delay (1162);
+//		driveRoad (WEST, 60);
+//		Exit ();
+//	}
 
 	if (Fork () == 0) {			/* Car 3 */
-		Delay (900);
+		Delay (100);
 		driveRoad (EAST, 50);
 		Exit ();
 	}
 
-	if (Fork () == 0) {			/* Car 4 */
-		Delay (900);
-		driveRoad (WEST, 30);
-		Exit ();
-	}
+//	if (Fork () == 0) {			/* Car 4 */
+//		Delay (900);
+//		driveRoad (WEST, 30);
+//		Exit ();
+//	}
 
 	driveRoad (EAST, 40);			/* Car 1 */
 
@@ -188,6 +196,11 @@ void Main ()
 void InitRoad ()
 {
 	/* do any initializations here */
+	int i,sem;
+	for(i = 0; i < NUMPOS; i++){
+		sem = Seminit (0);
+		semaphore_list[i] = sem;
+	}
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -212,9 +225,10 @@ void driveRoad (from, mph)
 			p = NUMPOS + 1 - i;
 			np = p - 1;
 		}
-
+		Wait (semaphore_list[p]);
 		Delay (3600/mph);
 		ProceedRoad ();
+		Signal (semaphore_list[p]);
 		PrintRoad ();
 		Printf ("Car %d moves from %d to %d\n", c, p, np);
 	}
