@@ -77,8 +77,11 @@ void MyWait (p, s)
 	int p, s;
 {
 	/* modify or add code any way you wish */
-
 	semtab[s].value--;
+	if (semtab[s].value < 0)
+	{
+		Block(p);
+	}
 }
 
 /*	MySignal (p, s) is called by the kernel whenever the system call
@@ -91,5 +94,9 @@ void MySignal (p, s)
 	/* modify or add code any way you wish */
 
 	semtab[s].value++;
+	if (semtab[s].value >= 0)
+	{
+		Unblock(p);
+	}
 }
 
