@@ -171,8 +171,8 @@ void MySignal (p, s)
 	int p, s;
 {
 	/* modify or add code any way you wish */
-
 	semtab[s].value++;
+	Printf("\nprocess %d signal semtab %d value to %d \n\n", p, s, semtab[s].value);
 	if (semtab[s].value <= 0)
 	{
 		int unblock_pid = dequeue(&(semtab[s].pid_queue));
