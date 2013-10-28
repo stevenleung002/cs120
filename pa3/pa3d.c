@@ -196,7 +196,7 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 0; i < NUMPOS; i++){
+	for(i = 0; i < 12; i++){
 		sem = Seminit (0);
 		shm.semaphore_list[i] = sem;
 	}
