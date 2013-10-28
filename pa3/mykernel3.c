@@ -171,7 +171,7 @@ void MySignal (p, s)
 	/* modify or add code any way you wish */
 
 	semtab[s].value++;
-	if (semtab[s].value >= 0)
+	if (semtab[s].value <= 0)
 	{
 		int unblock_pid = dequeue(&(semtab[s].pid_queue));
 		Unblock(unblock_pid);
