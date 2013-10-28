@@ -140,6 +140,9 @@
 #include "aux.h"
 #include "umix.h"
 
+#define QUEUESIZE 1000
+
+
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
