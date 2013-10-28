@@ -175,11 +175,10 @@ void Main ()
 		Exit ();
 	}
 
-//	if (Fork () == 0) {			/* Car 4 */
-//		Delay (900);
-//		driveRoad (WEST, 30);
-//		Exit ();
-//	}
+	if (Fork () == 0) {			/* Car 4 */
+		Delay (150);
+		driveRoad (EAST, 60);
+		Exit ();
 
 	driveRoad (EAST, 40);			/* Car 1 */
 
