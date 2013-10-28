@@ -145,6 +145,8 @@ void driveRoad (int from, int mph);
 
 struct {		/* structure of variables to be shared */
 	int semaphore_list[12];
+	queue west_cars;
+	queue east_cars;
 } shm;
 
 
@@ -161,21 +163,21 @@ void Main ()
 	 * So, you should do any initializations in InitRoad.
 	 */
 
-//	if (Fork () == 0) {			/* Car 2 */
-//		Delay (1162);
-//		driveRoad (WEST, 60);
-//		Exit ();
-//	}
+	if (Fork () == 0) {			/* Car 2 */
+		Delay (1162);
+		driveRoad (WEST, 60);
+		Exit ();
+	}
 
 	if (Fork () == 0) {			/* Car 3 */
-		Delay (100);
+		Delay (900);
 		driveRoad (EAST, 50);
 		Exit ();
 	}
 
 	if (Fork () == 0) {			/* Car 4 */
-		Delay (150);
-		driveRoad (EAST, 60);
+		Delay (900);
+		driveRoad (WEST, 60);
 		Exit ();
 	}
 
@@ -200,6 +202,8 @@ void InitRoad ()
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
+	init_queue(&(shm.west_cars));
+	init_queue(&(shm.east_cars));
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -216,9 +220,11 @@ void driveRoad (from, mph)
 	if(from == WEST){
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
+		enqueue(&(shm.west_cars), c);
 	}else{
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
+		enqueue(&(shm.east_cars), c);
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
