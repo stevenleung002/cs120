@@ -158,8 +158,8 @@ void MyWait (p, s)
 	if (semtab[s].value < 0)
 	{
 		enqueue(&(semtab[s].pid_queue), p);
-		Block(p);
 		Printf("\nprocess %d get blocked at position %d \n\n", p, s);
+		Block(p);
 	}
 }
 
