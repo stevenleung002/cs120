@@ -214,17 +214,17 @@ void driveRoad (from, mph)
 	c = Getpid ();				/* learn this car's id */
 
 	if(from == WEST){
-		init_semaphore_index = 0;
+		init_semaphore_index = 1;
 	}else{
-		init_semaphore_index = 11;
+		init_semaphore_index = 10;
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
 
 	EnterRoad (from);
 
-	Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
-	Signal (shm.semaphore_list[init_semaphore_index]);
+	//Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
+	//Signal (shm.semaphore_list[init_semaphore_index]);
 
 	PrintRoad ();
 	Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
@@ -239,7 +239,7 @@ void driveRoad (from, mph)
 		}
 
 		Printf("process %d setting semaphore %d\n", c, p);
-		Wait (shm.semaphore_list[p]);
+		Wait (shm.semaphore_list[np]);
 
 		Delay (3600/mph);
 		ProceedRoad ();
