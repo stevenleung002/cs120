@@ -211,16 +211,22 @@ void driveRoad (from, mph)
 {
 	int c;					/* car id c = process id */
 	int p, np, i;				/* positions */
+	int init_semaphore_index;
 
 	c = Getpid ();				/* learn this car's id */
 
-	Wait (shm.semaphore_list[1]);
-	Printf("process %d set semaphore %d\n", c, 1);
+	if(from == WEST){
+		init_semaphore_index = 1;
+	}else{
+		init_semaphore_index = 10;
+	}
+	Wait (shm.semaphore_list[init_semaphore_index]);
+	Printf("process %d set semaphore %d\n", c, init_semaphore_index);
 
 	EnterRoad (from);
 
-	Signal (shm.semaphore_list[1]);
-	Printf("process %d release semaphore %d\n", c, 1);
+	Signal (shm.semaphore_list[init_semaphore_index]);
+	Printf("process %d release semaphore %d\n", c, init_semaphore_index);
 
 	PrintRoad ();
 	Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
