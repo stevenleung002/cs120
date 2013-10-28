@@ -154,7 +154,7 @@ void MyWait (p, s)
 {
 	/* modify or add code any way you wish */
 	semtab[s].value--;
-	Printf("semtab %n value is %d \n", s, semtab[s].value);
+	Printf("semtab %d value is %d \n", s, semtab[s].value);
 	if (semtab[s].value < 0)
 	{
 		enqueue(&(semtab[s].pid_queue), p);
