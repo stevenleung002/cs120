@@ -179,6 +179,7 @@ void Main ()
 		Delay (150);
 		driveRoad (EAST, 60);
 		Exit ();
+	}
 
 	driveRoad (EAST, 40);			/* Car 1 */
 
