@@ -209,11 +209,6 @@ int get_queue_next(queue *q)
   return q->q[current];
 }
 // helpter method to check whether queue is empty or not
-int empty(queue *q)
-{
-  if (q->count <= 0) return 1;
-  else return 0;
-}
 
 
 
