@@ -144,7 +144,7 @@ void InitRoad ();
 void driveRoad (int from, int mph);
 
 struct {		/* structure of variables to be shared */
-	int semaphore_list[11];
+	int semaphore_list[12];
 } shm;
 
 
@@ -197,7 +197,7 @@ void InitRoad ()
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
 	for(i = 0; i < NUMPOS; i++){
-		sem = Seminit (1);
+		sem = Seminit (0);
 		shm.semaphore_list[i] = sem;
 	}
 }
@@ -214,9 +214,9 @@ void driveRoad (from, mph)
 	c = Getpid ();				/* learn this car's id */
 
 	if(from == WEST){
-		init_semaphore_index = 1;
+		init_semaphore_index = 0;
 	}else{
-		init_semaphore_index = 10;
+		init_semaphore_index = 11;
 	}
 	Wait (shm.semaphore_list[init_semaphore_index]);
 	Printf("process %d set semaphore %d\n", c, init_semaphore_index);
