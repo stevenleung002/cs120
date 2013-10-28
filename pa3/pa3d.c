@@ -151,43 +151,6 @@ typedef struct{
   int count;
 }queue;
 
-// initialize queue
-void init_queue(queue *q)
-{
-  q->first = 0;
-  q->last = QUEUESIZE - 1;
-  q->count = 0;
-  q->pointer = 0;
-}
-
-//insert element to queue
-void enqueue(queue *q, int x)
-{
-  if (q->count >= QUEUESIZE)
-  Printf("Warning: queue overflow enqueue x=%d\n",x);
-  else {
-    q->last = (q->last+1) % QUEUESIZE;
-    q->q[ q->last ] = x;
-    q->count = q->count + 1;
-  }
-}
-
-//remove element from queue, always the first element
-int dequeue(queue *q)
-{
-  int x;
-
-  if (q->count <= 0) Printf("Warning: empty queue dequeue.\n");
-  else {
-    x = q->q[ q->first ];
-    q->first = (q->first+1) % QUEUESIZE;
-    q->count = q->count - 1;
-  }
-
-  return(x);
-}
-
-
 
 void InitRoad ();
 void driveRoad (int from, int mph);
