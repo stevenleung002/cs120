@@ -218,13 +218,13 @@ void driveRoad (from, mph)
 	}else{
 		init_semaphore_index = 11;
 	}
+	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
-	Printf("process %d set semaphore %d\n", c, init_semaphore_index);
 
 	EnterRoad (from);
 
+	Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
 	Signal (shm.semaphore_list[init_semaphore_index]);
-	Printf("process %d release semaphore %d\n", c, init_semaphore_index);
 
 	PrintRoad ();
 	Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
@@ -238,14 +238,14 @@ void driveRoad (from, mph)
 			np = p - 1;
 		}
 
+		Printf("process %d setting semaphore %d\n", c, p);
 		Wait (shm.semaphore_list[p]);
-		Printf("process %d set semaphore %d\n", c, p);
 
 		Delay (3600/mph);
 		ProceedRoad ();
 
+		Printf("process %d releasing semaphore %d\n", c, p);
 		Signal (shm.semaphore_list[p]);
-		Printf("process %d release semaphore %d\n", c, p);
 
 		PrintRoad ();
 		Printf ("Car %d moves from %d to %d\n", c, p, np);
