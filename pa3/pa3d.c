@@ -140,6 +140,80 @@
 #include "aux.h"
 #include "umix.h"
 
+typedef struct{
+  int q[QUEUESIZE -1];
+  int first;
+  int last;
+  int pointer;
+  int count;
+}queue;
+
+// initialize queue
+void init_queue(queue *q)
+{
+  q->first = 0;
+  q->last = QUEUESIZE - 1;
+  q->count = 0;
+  q->pointer = 0;
+}
+
+//insert element to queue
+void enqueue(queue *q, int x)
+{
+  if (q->count >= QUEUESIZE)
+  Printf("Warning: queue overflow enqueue x=%d\n",x);
+  else {
+    q->last = (q->last+1) % QUEUESIZE;
+    q->q[ q->last ] = x;
+    q->count = q->count + 1;
+  }
+}
+
+//remove element from queue, always the first element
+int dequeue(queue *q)
+{
+  int x;
+
+  if (q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  else {
+    x = q->q[ q->first ];
+    q->first = (q->first+1) % QUEUESIZE;
+    q->count = q->count - 1;
+  }
+
+  return(x);
+}
+
+
+// helper method to get last element in queue
+int get_queue_last(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->last ];
+}
+// helper method to get the first element in queue
+int get_queue_first(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->first ];
+}
+// helpter method to get next element in queue
+int get_queue_next(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  int current = q->pointer;
+  q->pointer = (q->pointer + 1) % q->count;
+  return q->q[current];
+}
+// helpter method to check whether queue is empty or not
+int empty(queue *q)
+{
+  if (q->count <= 0) return 1;
+  else return 0;
+}
+
+
+
 void InitRoad ();
 void driveRoad (int from, int mph);
 
