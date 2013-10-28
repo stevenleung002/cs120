@@ -144,10 +144,8 @@ void InitRoad ();
 void driveRoad (int from, int mph);
 
 struct {		/* structure of variables to be shared */
-	int semaphore_list[10];
+	int semaphore_list[11];
 } shm;
-
-static int semaphore_list[10];
 
 
 void Main ()
