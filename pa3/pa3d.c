@@ -188,29 +188,6 @@ int dequeue(queue *q)
 }
 
 
-// helper method to get last element in queue
-int get_queue_last(queue *q)
-{
-  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
-  return q->q[ q->last ];
-}
-// helper method to get the first element in queue
-int get_queue_first(queue *q)
-{
-  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
-  return q->q[ q->first ];
-}
-// helpter method to get next element in queue
-int get_queue_next(queue *q)
-{
-  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
-  int current = q->pointer;
-  q->pointer = (q->pointer + 1) % q->count;
-  return q->q[current];
-}
-// helpter method to check whether queue is empty or not
-
-
 
 void InitRoad ();
 void driveRoad (int from, int mph);
