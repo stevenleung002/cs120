@@ -295,26 +295,5 @@ void driveRoad (from, mph)
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
 
-	if(shm.lock_direction == WEST){
-		dequeue(&(shm.west_cars));
-		if(shm.west_cars.count == 0){
-			for(int i = 0; i < shm.east_cars.count; i++){
-				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
-				Printf("signal %d direction\n", EAST);
-			}
-			shm.entrance_count = 0;
-			Printf("reset entrance_count\n");
-		}
-	}else{
-		dequeue(&(shm.east_cars));
-		if(shm.east_cars.count == 0){
-			for(int i = 0; i < shm.west_cars.count; i++){
-				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
-				Printf("signal %d direction\n", WEST);
-			}
-			shm.entrance_count = 0;
-			Printf("reset entrance_count\n");
-		}
 
-	}
 }
