@@ -141,7 +141,8 @@
 #include "umix.h"
 
 #define QUEUESIZE 1000
-
+#define DIRECTIONMUTAX 0
+#define ROADMUTAX 11
 
 typedef struct{
   int q[QUEUESIZE -1];
@@ -159,6 +160,8 @@ struct {		/* structure of variables to be shared */
 	int semaphore_list[12];
 	queue west_cars;
 	queue east_cars;
+	int entrance_count;
+	int lock_direction;
 } shm;
 
 
@@ -210,10 +213,13 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 0; i < 12; i++){
+	for(i = 1; i < 11; i++){
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
+	shm.semaphore_list[ROADMUTAX] = Seminit(10);
+	shm.semaphore_list[DIRECTIONMUTAX] = Seminit(0);
+	shm.entrance_count = 0;
 	init_queue(&(shm.west_cars));
 	init_queue(&(shm.east_cars));
 }
@@ -226,13 +232,16 @@ void driveRoad (from, mph)
 	int c;					/* car id c = process id */
 	int p, np, i;				/* positions */
 	int init_semaphore_index, end_semaphore_index;
+	int wait_direction;
 
 	c = Getpid ();				/* learn this car's id */
+	shm.entrance_count += 1;
 
 	if(from == WEST){
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
 		enqueue(&(shm.west_cars), c);
+
 	}else{
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
@@ -241,7 +250,14 @@ void driveRoad (from, mph)
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
 
-	EnterRoad (from);
+	if(shm.entrance_count == 1){
+		shm.lock_direction = from;
+	}
+	if(from == shm.lock_direction){
+		EnterRoad (from);
+	}else{
+		Wait(shm.semaphore_list[DIRECTIONMUTAX]);
+	}
 
 	//Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
 	//Signal (shm.semaphore_list[init_semaphore_index]);
@@ -277,4 +293,23 @@ void driveRoad (from, mph)
 	Signal (shm.semaphore_list[end_semaphore_index]);
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
+
+	if(shm.lock_direction == WEST){
+		dequeue(&(shm.west_cars));
+		value = empty(&(shm.west_cars));
+		if(value == 1){
+			for(int i = 0; i < shm.west_cars.count; i++){
+				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
+			}
+		}
+	}else{
+		dequeue(&(shm.east_cars));
+		value = empty(&(shm.east_cars));
+		if(value == 1){
+			for(int i = 0; i < shm.east_cars.count; i++){
+				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
+			}
+		}
+
+	}
 }
