@@ -141,7 +141,7 @@
 #include "umix.h"
 
 #define QUEUESIZE 1000
-#define DIRECTIONMUTAX 0
+#define WESTMUTAX 0
 #define ROADMUTAX 11
 
 typedef struct{
@@ -217,8 +217,8 @@ void InitRoad ()
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
-	shm.semaphore_list[ROADMUTAX] = Seminit(10);
-	shm.semaphore_list[DIRECTIONMUTAX] = Seminit(0);
+	shm.semaphore_list[WESTMUTAX] = Seminit(1);
+	shm.semaphore_list[ROADMUTAX] = Seminit(1);
 	shm.entrance_count = 0;
 	init_queue(&(shm.west_cars));
 	init_queue(&(shm.east_cars));
@@ -235,31 +235,25 @@ void driveRoad (from, mph)
 	int wait_direction;
 
 	c = Getpid ();				/* learn this car's id */
-	Printf("Current entrance_count: %d\n", shm.entrance_count );
-	shm.entrance_count += 1;
-	Printf("After entrance_count: %d\n", shm.entrance_count );
+	if(shm.west_cars.count > 0 && from == WEST){
+		Printf("release lock %d\n", WEST);
+		Signal(shm.semaphore_list[ROADMUTAX]);
+	}else if(shm.east_cars.count > 0 && from == EAST){
+		Printf("release lock %d\n", EAST);
+		Signal(shm.semaphore_list[ROADMUTAX]);
+	}
 
 	if(from == WEST){
+		Wait(shm.semaphore_list[ROADMUTAX]);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
 		enqueue(&(shm.west_cars), c);
 
 	}else{
+		Wait(shm.semaphore_list[ROADMUTAX]);
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
 		enqueue(&(shm.east_cars), c);
-	}
-
-	if(shm.entrance_count == 1){
-		shm.lock_direction = from;
-		Printf("Lock direction %d\n", shm.lock_direction);
-	}
-	if(from == shm.lock_direction){
-		EnterRoad (from);
-		Printf("Car %d able to enter rode\n", c);
-	}else{
-		Printf("Car %d wait on direction %d \n", c, 1 - from);
-		Wait(shm.semaphore_list[DIRECTIONMUTAX]);
 	}
 
 
