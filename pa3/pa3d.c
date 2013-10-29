@@ -229,6 +229,7 @@ void driveRoad (from, mph)
 
 	c = Getpid ();				/* learn this car's id */
 
+	Printf("east car queue size: %d\n", shm.east_cars.count);
 	if(shm.west_cars.count > 0 && from == WEST){
     Printf("release lock %d\n", WEST);
     Signal(shm.semaphore_list[ROADMUTAX]);
