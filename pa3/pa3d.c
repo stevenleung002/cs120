@@ -237,6 +237,7 @@ void driveRoad (from, mph)
 	c = Getpid ();				/* learn this car's id */
 	Printf("Current entrance_count: %d\n", shm.entrance_count );
 	shm.entrance_count += 1;
+	Printf("After entrance_count: %d\n", shm.entrance_count );
 
 	if(from == WEST){
 		init_semaphore_index = 1;
