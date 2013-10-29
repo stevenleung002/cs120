@@ -179,7 +179,7 @@ void Main ()
 	 */
 
 	if (Fork () == 0) {			/* Car 2 */
-		Delay (1162);
+		Delay (0);
 		driveRoad (WEST, 60);
 		Exit ();
 	}
