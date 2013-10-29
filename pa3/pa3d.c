@@ -140,28 +140,11 @@
 #include "aux.h"
 #include "umix.h"
 
-#define QUEUESIZE 1000
-#define DIRECTIONMUTAX 0
-#define ROADMUTAX 11
-
-typedef struct{
-  int q[QUEUESIZE -1];
-  int first;
-  int last;
-  int pointer;
-  int count;
-}queue;
-
-
 void InitRoad ();
 void driveRoad (int from, int mph);
 
 struct {		/* structure of variables to be shared */
 	int semaphore_list[12];
-	queue west_cars;
-	queue east_cars;
-	int entrance_count;
-	int lock_direction;
 } shm;
 
 
@@ -178,21 +161,21 @@ void Main ()
 	 * So, you should do any initializations in InitRoad.
 	 */
 
-	if (Fork () == 0) {			/* Car 2 */
-		Delay (1162);
-		driveRoad (WEST, 60);
-		Exit ();
-	}
+//	if (Fork () == 0) {			/* Car 2 */
+//		Delay (1162);
+//		driveRoad (WEST, 60);
+//		Exit ();
+//	}
 
 	if (Fork () == 0) {			/* Car 3 */
-		Delay (900);
+		Delay (100);
 		driveRoad (EAST, 50);
 		Exit ();
 	}
 
 	if (Fork () == 0) {			/* Car 4 */
-		Delay (900);
-		driveRoad (WEST, 60);
+		Delay (150);
+		driveRoad (EAST, 60);
 		Exit ();
 	}
 
@@ -213,15 +196,10 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 1; i < 11; i++){
+	for(i = 0; i < 12; i++){
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
-	shm.semaphore_list[ROADMUTAX] = Seminit(1);
-	//shm.semaphore_list[DIRECTIONMUTAX] = Seminit(0);
-	shm.entrance_count = 0;
-	init_queue(&(shm.west_cars));
-	init_queue(&(shm.east_cars));
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -232,24 +210,20 @@ void driveRoad (from, mph)
 	int c;					/* car id c = process id */
 	int p, np, i;				/* positions */
 	int init_semaphore_index, end_semaphore_index;
-	int wait_direction;
 
 	c = Getpid ();				/* learn this car's id */
 
 	if(from == WEST){
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
-		enqueue(&(shm.west_cars), c);
-
 	}else{
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
-		enqueue(&(shm.east_cars), c);
 	}
-
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
 
+	EnterRoad (from);
 
 	//Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
 	//Signal (shm.semaphore_list[init_semaphore_index]);
@@ -285,6 +259,4 @@ void driveRoad (from, mph)
 	Signal (shm.semaphore_list[end_semaphore_index]);
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
-
-
 }
