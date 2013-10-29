@@ -235,6 +235,7 @@ void driveRoad (from, mph)
 	int wait_direction;
 
 	c = Getpid ();				/* learn this car's id */
+	Printf("Current entrance_count: %d\n", shm.entrance_count );
 	shm.entrance_count += 1;
 
 	if(from == WEST){
