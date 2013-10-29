@@ -300,8 +300,10 @@ void driveRoad (from, mph)
 		if(value == 1){
 			for(int i = 0; i < shm.west_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
+				Printf("signal %d direction\n", EAST);
 			}
 			shm.entrance_count = 0;
+			Printf("reset entrance_count\n");
 		}
 	}else{
 		dequeue(&(shm.east_cars));
@@ -309,8 +311,10 @@ void driveRoad (from, mph)
 		if(value == 1){
 			for(int i = 0; i < shm.east_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
+				Printf("signal %d direction\n", WEST);
 			}
 			shm.entrance_count = 0;
+			Printf("reset entrance_count\n");
 		}
 
 	}
