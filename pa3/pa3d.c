@@ -244,15 +244,15 @@ void driveRoad (from, mph)
 	}
 
 	if(from == WEST){
-		Printf("lock road %d\n", WEST);
 		Wait(shm.semaphore_list[ROADMUTAX]);
+		Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
 		enqueue(&(shm.west_cars), c);
 
 	}else{
-		Printf("lock road %d\n", EAST);
 		Wait(shm.semaphore_list[ROADMUTAX]);
+		Printf("lock road %d\n", EAST);
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
 		enqueue(&(shm.east_cars), c);
