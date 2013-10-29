@@ -174,21 +174,21 @@ void Main ()
 	 * So, you should do any initializations in InitRoad.
 	 */
 
-//	if (Fork () == 0) {			/* Car 2 */
-//		Delay (1162);
-//		driveRoad (WEST, 60);
-//		Exit ();
-//	}
+	if (Fork () == 0) {			/* Car 2 */
+		Delay (1162);
+		driveRoad (WEST, 60);
+		Exit ();
+	}
 
 	if (Fork () == 0) {			/* Car 3 */
-		Delay (100);
+		Delay (900);
 		driveRoad (EAST, 50);
 		Exit ();
 	}
 
 	if (Fork () == 0) {			/* Car 4 */
-		Delay (150);
-		driveRoad (EAST, 60);
+		Delay (900);
+		driveRoad (WEST, 60);
 		Exit ();
 	}
 
