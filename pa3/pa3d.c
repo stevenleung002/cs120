@@ -143,8 +143,21 @@
 void InitRoad ();
 void driveRoad (int from, int mph);
 
+#define ROADMUTAX 0
+#define QUEUESIZE 1000
+
+typedef struct{
+  int q[QUEUESIZE -1];
+  int first;
+  int last;
+  int pointer;
+  int count;
+}queue;
+
 struct {		/* structure of variables to be shared */
 	int semaphore_list[12];
+	queue west_cars;
+  queue east_cars;
 } shm;
 
 
@@ -200,6 +213,9 @@ void InitRoad ()
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
+	shm.semaphore_list[ROADMUTAX] = Seminit(1);
+	init_queue(&(shm.west_cars));
+  init_queue(&(shm.east_cars));
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -213,12 +229,26 @@ void driveRoad (from, mph)
 
 	c = Getpid ();				/* learn this car's id */
 
+	if(shm.west_cars.count > 0 && from == WEST){
+    Printf("release lock %d\n", WEST);
+    Signal(shm.semaphore_list[ROADMUTAX]);
+  }else if(shm.east_cars.count > 0 && from == EAST){
+    Printf("release lock %d\n", EAST);
+    Signal(shm.semaphore_list[ROADMUTAX]);
+  }
+
 	if(from == WEST){
+    Wait(shm.semaphore_list[ROADMUTAX]);
+    Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
+    enqueue(&(shm.west_cars), c);
 	}else{
-		init_semaphore_index = 10;
-		end_semaphore_index = 1;
+    Wait(shm.semaphore_list[ROADMUTAX]);
+    Printf("lock road %d\n", EAST);
+    init_semaphore_index = 10;
+    end_semaphore_index = 1;
+    enqueue(&(shm.east_cars), c);
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
