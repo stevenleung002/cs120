@@ -301,6 +301,7 @@ void driveRoad (from, mph)
 			for(int i = 0; i < shm.west_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
 			}
+			shm.entrance_count = 0;
 		}
 	}else{
 		dequeue(&(shm.east_cars));
@@ -309,6 +310,7 @@ void driveRoad (from, mph)
 			for(int i = 0; i < shm.east_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
 			}
+			shm.entrance_count = 0;
 		}
 
 	}
