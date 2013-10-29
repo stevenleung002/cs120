@@ -32,7 +32,7 @@
  *
  *	Regshm ((char *) &shm, sizeof (shm))
  *
- * The first parameter is the address of the shared (struct) variable, 
+ * The first parameter is the address of the shared (struct) variable,
  * and the second is its size.  The latter is needed because there is a
  * maximum size (MAXSHM) that the operating system supports for shared
  * memory.
@@ -86,4 +86,5 @@ void Main ()
 	shm.x = 1062;		/* Process 1 */
 	shm.y[3] = 'a';
 	Printf ("P1: x = %d, y[3] = %c\n", shm.x, shm.y[3]);
+	shm.x += 1;
 }
