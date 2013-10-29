@@ -252,10 +252,13 @@ void driveRoad (from, mph)
 
 	if(shm.entrance_count == 1){
 		shm.lock_direction = from;
+		Printf("Lock direction %d\n", shm.lock_direction);
 	}
 	if(from == shm.lock_direction){
 		EnterRoad (from);
+		Printf("Car %d able to enter rode\n", c);
 	}else{
+		Printf("Car %d wait on direction %d \n", c, 1 - from);
 		Wait(shm.semaphore_list[DIRECTIONMUTAX]);
 	}
 
