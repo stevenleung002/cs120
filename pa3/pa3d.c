@@ -296,7 +296,7 @@ void driveRoad (from, mph)
 
 	if(shm.lock_direction == WEST){
 		dequeue(&(shm.west_cars));
-		value = empty(&(shm.west_cars));
+		int value = empty(&(shm.west_cars));
 		if(value == 1){
 			for(int i = 0; i < shm.west_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
@@ -304,7 +304,7 @@ void driveRoad (from, mph)
 		}
 	}else{
 		dequeue(&(shm.east_cars));
-		value = empty(&(shm.east_cars));
+		int value = empty(&(shm.east_cars));
 		if(value == 1){
 			for(int i = 0; i < shm.east_cars.count; i++){
 				Signal(shm.semaphore_list[DIRECTIONMUTAX]);
