@@ -247,8 +247,6 @@ void driveRoad (from, mph)
 		end_semaphore_index = 1;
 		enqueue(&(shm.east_cars), c);
 	}
-	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
-	Wait (shm.semaphore_list[init_semaphore_index]);
 
 	if(shm.entrance_count == 1){
 		shm.lock_direction = from;
@@ -261,6 +259,10 @@ void driveRoad (from, mph)
 		Printf("Car %d wait on direction %d \n", c, 1 - from);
 		Wait(shm.semaphore_list[DIRECTIONMUTAX]);
 	}
+
+
+	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
+	Wait (shm.semaphore_list[init_semaphore_index]);
 
 	//Printf("process %d releasing semaphore %d\n", c, init_semaphore_index);
 	//Signal (shm.semaphore_list[init_semaphore_index]);
