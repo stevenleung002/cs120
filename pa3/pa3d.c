@@ -144,6 +144,8 @@ void InitRoad ();
 void driveRoad (int from, int mph);
 
 #define ROADMUTAX 0
+#define WESTMUTAX 11
+#define EASTMUTAX 12
 #define QUEUESIZE 1000
 
 typedef struct{
@@ -155,7 +157,7 @@ typedef struct{
 }queue;
 
 struct {		/* structure of variables to be shared */
-	int semaphore_list[12];
+	int semaphore_list[13];
 	int west_cars;
   int east_cars;
 } shm;
@@ -209,11 +211,13 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 0; i < 12; i++){
+	for(i = 1; i < 11; i++){
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
 	shm.semaphore_list[ROADMUTAX] = Seminit(1);
+	shm.semaphore_list[WESTMUTAX] = Seminit(1);
+	shm.semaphore_list[EASTMUTAX] = Seminit(1);
 	shm.east_cars = 0;
 	shm.west_cars = 0;
 }
@@ -233,19 +237,23 @@ void driveRoad (from, mph)
 	if(shm.west_cars > 0 && from == WEST){
     Printf("release lock %d\n", WEST);
     Signal(shm.semaphore_list[ROADMUTAX]);
+    Signal(shm.semaphore_list[WESTMUTAX]);
   }else if(shm.east_cars > 0 && from == EAST){
     Printf("release lock %d\n", EAST);
     Signal(shm.semaphore_list[ROADMUTAX]);
+    Signal(shm.semaphore_list[EASTMUTAX]);
   }
 
 	if(from == WEST){
     Wait(shm.semaphore_list[ROADMUTAX]);
+    Wait(shm.semaphore_list[WESTMUTAX]);
     Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
     shm.west_cars += 1;
 	}else{
     Wait(shm.semaphore_list[ROADMUTAX]);
+    Wait(shm.semaphore_list[EASTMUTAX]);
     Printf("lock road %d\n", EAST);
     init_semaphore_index = 10;
     end_semaphore_index = 1;
@@ -290,4 +298,9 @@ void driveRoad (from, mph)
 	Signal (shm.semaphore_list[end_semaphore_index]);
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
+	if(from == WEST){
+		Signal(shm.semaphore_list[WESTMUTAX]);
+	}else{
+		Signal(shm.semaphore_list[EASTMUTAX]);
+	}
 }
