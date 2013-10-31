@@ -240,10 +240,12 @@ void driveRoad (from, mph)
     Printf("release lock %d\n", WEST);
     Signal(shm.semaphore_list[ROADMUTAX]);
     Signal(shm.semaphore_list[WESTMUTAX]);
+    Signal(shm.semaphore_list[EASTMUTAX]);
   }else if(shm.east_cars > 0 && from == EAST){
     Printf("release lock %d\n", EAST);
     Signal(shm.semaphore_list[ROADMUTAX]);
     Signal(shm.semaphore_list[EASTMUTAX]);
+    Signal(shm.semaphore_list[WESTMUTAX]);
   }
 
 	if(from == WEST){
