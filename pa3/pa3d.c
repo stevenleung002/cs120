@@ -321,6 +321,7 @@ void driveRoad (from, mph)
 	if(from == WEST){
 		shm.west_cars -= 1;
 		if(shm.west_cars == 0){
+			Printf(" east wait cars: %d\n", shm.east_wait_cars);
 			for(int j = 0; j < shm.east_wait_cars; j++){
 				Signal(shm.semaphore_list[EASTMUTAX]);
 				Signal(shm.semaphore_list[WESTMUTAX]);
@@ -330,6 +331,7 @@ void driveRoad (from, mph)
 	}else{
 		shm.east_cars -= 1;
 		if(shm.east_cars == 0){
+			Printf(" west wait cars: %d\n", shm.west_wait_cars);
 			for(int j = 0; j < shm.west_wait_cars; j++){
 				Signal(shm.semaphore_list[WESTMUTAX]);
 				Signal(shm.semaphore_list[EASTMUTAX]);
