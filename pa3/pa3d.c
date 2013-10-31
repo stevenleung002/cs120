@@ -314,7 +314,7 @@ void driveRoad (from, mph)
 		shm.west_cars -= 1;
 		if(shm.west_cars == 0){
 			Signal(shm.semaphore_list[EASTMUTAX]);
-			if(direction_switch == 0){
+			if(shm.direction_switch == 0){
 		    Signal(shm.semaphore_list[ROADMUTAX]);
 			}
 		}
@@ -322,7 +322,7 @@ void driveRoad (from, mph)
 		shm.east_cars -= 1;
 		if(shm.east_cars == 0){
 			Signal(shm.semaphore_list[WESTMUTAX]);
-			if(direction_switch == 0){
+			if(shm.direction_switch == 0){
 		    Signal(shm.semaphore_list[ROADMUTAX]);
 			}
 		}
