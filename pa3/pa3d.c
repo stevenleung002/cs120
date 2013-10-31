@@ -301,8 +301,10 @@ void driveRoad (from, mph)
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
 	if(from == WEST){
+		shm.west_cars -= 1;
 		Signal(shm.semaphore_list[WESTMUTAX]);
 	}else{
+		shm.east_cars -= 1;
 		Signal(shm.semaphore_list[EASTMUTAX]);
 	}
 }
