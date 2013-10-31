@@ -254,6 +254,7 @@ void driveRoad (from, mph)
 
 	if(from == WEST){
 		shm.west_wait_cars += 1;
+		Printf(" west wait cars added: %d\n", shm.west_wait_cars);
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[WESTMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
@@ -267,6 +268,7 @@ void driveRoad (from, mph)
     shm.west_wait_cars -= 1;
 	}else{
 		shm.east_wait_cars += 1;
+		Printf(" east wait cars added: %d\n", shm.east_wait_cars);
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
 		Wait(shm.semaphore_list[WESTMUTAX]);
