@@ -279,7 +279,7 @@ void driveRoad (from, mph)
     init_semaphore_index = 10;
     end_semaphore_index = 1;
     shm.east_cars += 1;
-    shm.west_wait_cars -= 1;
+    shm.east_wait_cars -= 1;
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
