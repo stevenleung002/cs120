@@ -244,9 +244,9 @@ void driveRoad (from, mph)
     Printf("release lock %d\n", EAST);
     Signal(shm.semaphore_list[ROADMUTAX]);
     Signal(shm.semaphore_list[EASTMUTAX]);
-  }else if(shm.west_cars > 0 && from = EAST){
+  }else if(shm.west_cars > 0 && from == EAST){
   	shm.direction_switch = 1;
-  }else if(shm.east_cars > 0 && from = WEST){
+  }else if(shm.east_cars > 0 && from == WEST){
   	shm.direction_switch = 1;
   }
 
