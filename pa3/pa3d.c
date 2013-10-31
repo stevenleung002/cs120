@@ -308,10 +308,12 @@ void driveRoad (from, mph)
 		shm.west_cars -= 1;
 		if(shm.west_cars == 0){
 			Signal(shm.semaphore_list[EASTMUTAX]);
+	    Signal(shm.semaphore_list[ROADMUTAX]);
 		}
 	}else{
 		shm.east_cars -= 1;
 		if(shm.east_cars == 0)
 		Signal(shm.semaphore_list[WESTMUTAX]);
+    Signal(shm.semaphore_list[ROADMUTAX]);
 	}
 }
