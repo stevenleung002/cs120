@@ -161,6 +161,8 @@ struct {		/* structure of variables to be shared */
 	int west_cars;
   int east_cars;
   int direction_switch;
+  int west_wait_cars;
+  int east_wait_cars;
 } shm;
 
 
@@ -222,6 +224,8 @@ void InitRoad ()
 	shm.east_cars = 0;
 	shm.west_cars = 0;
 	shm.direction_switch = 0;
+	shm.west_wait_cars = 0;
+	shm.east_wait_cars = 0;
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -249,6 +253,7 @@ void driveRoad (from, mph)
   }
 
 	if(from == WEST){
+		shm.west_wait_cars += 1;
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[WESTMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
@@ -259,7 +264,9 @@ void driveRoad (from, mph)
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
     shm.west_cars += 1;
+    shm.west_wait_cars -= 1;
 	}else{
+		shm.east_wait_cars += 1;
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
 		Wait(shm.semaphore_list[WESTMUTAX]);
@@ -270,6 +277,7 @@ void driveRoad (from, mph)
     init_semaphore_index = 10;
     end_semaphore_index = 1;
     shm.east_cars += 1;
+    shm.west_wait_cars -= 1;
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
@@ -313,16 +321,20 @@ void driveRoad (from, mph)
 	if(from == WEST){
 		shm.west_cars -= 1;
 		if(shm.west_cars == 0){
-			Signal(shm.semaphore_list[EASTMUTAX]);
-			Signal(shm.semaphore_list[WESTMUTAX]);
-	    Signal(shm.semaphore_list[ROADMUTAX]);
+			for(int j = 0; j < shm.east_wait_cars; j++){
+				Signal(shm.semaphore_list[EASTMUTAX]);
+				Signal(shm.semaphore_list[WESTMUTAX]);
+		    Signal(shm.semaphore_list[ROADMUTAX]);
+			}
 		}
 	}else{
 		shm.east_cars -= 1;
 		if(shm.east_cars == 0){
-			Signal(shm.semaphore_list[WESTMUTAX]);
-			Signal(shm.semaphore_list[EASTMUTAX]);
-	    Signal(shm.semaphore_list[ROADMUTAX]);
+			for(int j = 0; j < shm.west_wait_cars; j++){
+				Signal(shm.semaphore_list[WESTMUTAX]);
+				Signal(shm.semaphore_list[EASTMUTAX]);
+		    Signal(shm.semaphore_list[ROADMUTAX]);
+		  }
 		}
 	}
 }
