@@ -176,17 +176,17 @@ void Main ()
 	 * So, you should do any initializations in InitRoad.
 	 */
 
-	if (Fork () == 0) {			/* Car 2 */
-		Delay (1162);
-		driveRoad (WEST, 60);
-		Exit ();
-	}
+//	if (Fork () == 0) {			/* Car 2 */
+//		Delay (1162);
+//		driveRoad (WEST, 60);
+//		Exit ();
+//	}
 
-	if (Fork () == 0) {			/* Car 3 */
-		Delay (900);
-		driveRoad (EAST, 50);
-		Exit ();
-	}
+//	if (Fork () == 0) {			/* Car 3 */
+//		Delay (900);
+//		driveRoad (EAST, 50);
+//		Exit ();
+//	}
 
 	if (Fork () == 0) {			/* Car 4 */
 		Delay (900);
@@ -234,32 +234,28 @@ void driveRoad (from, mph)
 	c = Getpid ();				/* learn this car's id */
 
 	Printf("east car queue size: %d\n", shm.east_cars);
-	if(shm.west_cars > 0 && from == WEST){
-    Printf("release lock %d\n", WEST);
-    Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[WESTMUTAX]);
-  }else if(shm.east_cars > 0 && from == EAST){
-    Printf("release lock %d\n", EAST);
-    Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[EASTMUTAX]);
+	if(shm.west_cars > 0 && from == EAST){
+    Printf("wait for west side cars\n");
+    Wait(shm.semaphore_list[EASTMUTAX]);
+  }else if(shm.east_cars > 0 && from == WEST){
+    Printf("wait for east side cars \n");
+    Wait(shm.semaphore_list[WESTMUTAX]);
   }
 
 	if(from == WEST){
-    Wait(shm.semaphore_list[ROADMUTAX]);
-    Wait(shm.semaphore_list[WESTMUTAX]);
-  //  if(shm.west_cars == 0){
-	//    Wait(shm.semaphore_list[EASTMUTAX]);
- //   }
+    if(shm.west_cars == 0){
+	    Wait(shm.semaphore_list[ROADMUTAX]);
+	    Wait(shm.semaphore_list[EASTMUTAX]);
+    }
     Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
     shm.west_cars += 1;
 	}else{
-    Wait(shm.semaphore_list[ROADMUTAX]);
-    Wait(shm.semaphore_list[EASTMUTAX]);
- //   if(shm.east_cars == 0){
-//	    Wait(shm.semaphore_list[WESTMUTAX]);
-//    }
+    if(shm.east_cars == 0){
+	    Wait(shm.semaphore_list[ROADMUTAX]);
+	    Wait(shm.semaphore_list[WESTMUTAX]);
+    }
     Printf("lock road %d\n", EAST);
     init_semaphore_index = 10;
     end_semaphore_index = 1;
