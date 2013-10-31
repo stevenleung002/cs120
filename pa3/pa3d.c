@@ -245,8 +245,10 @@ void driveRoad (from, mph)
     Signal(shm.semaphore_list[ROADMUTAX]);
     Signal(shm.semaphore_list[EASTMUTAX]);
   }else if(shm.west_cars > 0 && from == EAST){
+  	Printf("set direction to change\n");
   	shm.direction_switch = 1;
   }else if(shm.east_cars > 0 && from == WEST){
+		Printf("set direction to change\n");
   	shm.direction_switch = 1;
   }
 
