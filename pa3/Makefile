@@ -3,10 +3,10 @@
 LIBDIR = $(UMIXPUBDIR)/lib
 # LIBDIR = $(UMIXROOTDIR)/sys
 
-CC 	= cc 
+CC 	= cc
 FLAGS 	= -g -L$(LIBDIR) -lumix3
 
-PA3 =	pa3a pa3b pa3c pa3d
+PA3 =	pa3a pa3b pa3c pa3d philsophers
 
 pa3:	$(PA3)
 
@@ -21,6 +21,9 @@ pa3c:	pa3c.c aux.h umix.h mykernel3.o
 
 pa3d:	pa3d.c aux.h umix.h mykernel3.o
 	$(CC) $(FLAGS) -o pa3d pa3d.c mykernel3.o
+
+philsophers: philsophers.c aux.h umix.h mykernel3.o
+	$(CC) $(FLAGS) -o philsophers philsophers.c mykernel3.o
 
 mykernel3.o:	mykernel3.c aux.h sys.h mykernel3.h
 	$(CC) $(FLAGS) -c mykernel3.c
