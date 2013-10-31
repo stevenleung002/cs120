@@ -160,6 +160,7 @@ struct {		/* structure of variables to be shared */
 	int semaphore_list[13];
 	int west_cars;
   int east_cars;
+  int direction_switch;
 } shm;
 
 
@@ -220,6 +221,7 @@ void InitRoad ()
 	shm.semaphore_list[EASTMUTAX] = Seminit(1);
 	shm.east_cars = 0;
 	shm.west_cars = 0;
+	shm.direction_switch = 0;
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -242,6 +244,10 @@ void driveRoad (from, mph)
     Printf("release lock %d\n", EAST);
     Signal(shm.semaphore_list[ROADMUTAX]);
     Signal(shm.semaphore_list[EASTMUTAX]);
+  }else if(shm.west_cars > 0 && from = EAST){
+  	shm.direction_switch = 1;
+  }else if(shm.east_cars > 0 && from = WEST){
+  	shm.direction_switch = 1;
   }
 
 	if(from == WEST){
@@ -308,13 +314,17 @@ void driveRoad (from, mph)
 		shm.west_cars -= 1;
 		if(shm.west_cars == 0){
 			Signal(shm.semaphore_list[EASTMUTAX]);
-	    Signal(shm.semaphore_list[ROADMUTAX]);
+			if(direction_switch == 0){
+		    Signal(shm.semaphore_list[ROADMUTAX]);
+			}
 		}
 	}else{
 		shm.east_cars -= 1;
 		if(shm.east_cars == 0){
 			Signal(shm.semaphore_list[WESTMUTAX]);
-	    Signal(shm.semaphore_list[ROADMUTAX]);
+			if(direction_switch == 0){
+		    Signal(shm.semaphore_list[ROADMUTAX]);
+			}
 		}
 	}
 }
