@@ -237,17 +237,19 @@ void driveRoad (from, mph)
 	if(shm.west_cars > 0 && from == WEST){
     Printf("release lock %d\n", WEST);
     Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[EASTMUTAX]);
+    Signal(shm.semaphore_list[WESTMUTAX]);
   }else if(shm.east_cars > 0 && from == EAST){
     Printf("release lock %d\n", EAST);
     Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[WESTMUTAX]);
+    Signal(shm.semaphore_list[EASTMUTAX]);
   }
 
 	if(from == WEST){
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[WESTMUTAX]);
-    Wait(shm.semaphore_list[EASTMUTAX]);
+    if(shm.west_cars == 0){
+	    Wait(shm.semaphore_list[EASTMUTAX]);
+    }
     Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
@@ -255,7 +257,9 @@ void driveRoad (from, mph)
 	}else{
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
-    Wait(shm.semaphore_list[WESTMUTAX]);
+    if(shm.east_cars == 0){
+	    Wait(shm.semaphore_list[WESTMUTAX]);
+    }
     Printf("lock road %d\n", EAST);
     init_semaphore_index = 10;
     end_semaphore_index = 1;
@@ -302,9 +306,12 @@ void driveRoad (from, mph)
 	Printf ("Car %d exits road\n", c);
 	if(from == WEST){
 		shm.west_cars -= 1;
-		Signal(shm.semaphore_list[WESTMUTAX]);
+		if(shm.west_cars == 0){
+			Signal(shm.semaphore_list[EASTMUTAX]);
+		}
 	}else{
 		shm.east_cars -= 1;
-		Signal(shm.semaphore_list[EASTMUTAX]);
+		if(shm.east_cars == 0)
+		Signal(shm.semaphore_list[WESTMUTAX]);
 	}
 }
