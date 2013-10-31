@@ -312,8 +312,9 @@ void driveRoad (from, mph)
 		}
 	}else{
 		shm.east_cars -= 1;
-		if(shm.east_cars == 0)
-		Signal(shm.semaphore_list[WESTMUTAX]);
-    Signal(shm.semaphore_list[ROADMUTAX]);
+		if(shm.east_cars == 0){
+			Signal(shm.semaphore_list[WESTMUTAX]);
+	    Signal(shm.semaphore_list[ROADMUTAX]);
+		}
 	}
 }
