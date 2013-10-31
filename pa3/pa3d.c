@@ -247,9 +247,9 @@ void driveRoad (from, mph)
 	if(from == WEST){
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[WESTMUTAX]);
-    if(shm.west_cars == 0){
-	    Wait(shm.semaphore_list[EASTMUTAX]);
-    }
+  //  if(shm.west_cars == 0){
+	//    Wait(shm.semaphore_list[EASTMUTAX]);
+ //   }
     Printf("lock road %d\n", WEST);
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
@@ -257,9 +257,9 @@ void driveRoad (from, mph)
 	}else{
     Wait(shm.semaphore_list[ROADMUTAX]);
     Wait(shm.semaphore_list[EASTMUTAX]);
-    if(shm.east_cars == 0){
-	    Wait(shm.semaphore_list[WESTMUTAX]);
-    }
+ //   if(shm.east_cars == 0){
+//	    Wait(shm.semaphore_list[WESTMUTAX]);
+//    }
     Printf("lock road %d\n", EAST);
     init_semaphore_index = 10;
     end_semaphore_index = 1;
