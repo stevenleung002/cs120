@@ -143,8 +143,8 @@
 void InitRoad ();
 void driveRoad (int from, int mph);
 
-#define WESTSIGNAL 0
-#define EASTSIGNAL 11
+#define WESTSIGNAL 11
+#define EASTSIGNAL 12
 #define RED 0
 #define GREEN 1
 #define TRUE 1
@@ -152,7 +152,7 @@ void driveRoad (int from, int mph);
 #define QUEUESIZE 1000
 
 struct {		/* structure of variables to be shared */
-	int semaphore_list[12];
+	int semaphore_list[13];
 	int west_light;
   int east_light;
   int west_wait;
