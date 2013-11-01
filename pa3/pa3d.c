@@ -292,9 +292,14 @@ void driveRoad (from, mph)
 	}
 
 	if(from == WEST){
+		init_semaphore_index = 1;
+	  end_semaphore_index = 10;
 		shm.west_cars += 1;
 	}else if(from == EAST){
 		shm.east_cars += 1;
+		init_semaphore_index = 10;
+    end_semaphore_index = 1;
+
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
