@@ -217,8 +217,8 @@ void InitRoad ()
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
-	shm.semaphore_list[WESTSIGNAL] = Seminit(1);
-	shm.semaphore_list[EASTSIGNAL] = Seminit(1);
+	shm.semaphore_list[WESTSIGNAL] = Seminit(0);
+	shm.semaphore_list[EASTSIGNAL] = Seminit(0);
 	shm.east_light = RED;
 	shm.west_light = RED;
 	shm.west_wait_cars = 0;
