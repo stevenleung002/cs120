@@ -245,15 +245,20 @@ void driveRoad (from, mph)
 		if(from == WEST){
 			shm.west_light = GREEN;
 			shm.east_light = RED;
-			init_semaphore_index = 1;
-			end_semaphore_index = 10;
 		}else if(from == EAST){
 			shm.east_light = GREEN;
 			shm.west_light = RED;
-			init_semaphore_index = 10;
-			end_semaphore_index = 1;
 		}
 		shm.init_counter++;
+	}
+	if(shm.east_cars == 0 && from == WEST){
+		init_semaphore_index = 1;
+		end_semaphore_index = 10;
+		shm.east_light == RED;
+	}else if(shm.west_cars == 0 && from = EAST){
+		init_semaphore_index = 10;
+		end_semaphore_index = 1;
+		shm.west_light == RED;
 	}
 
 	if(shm.west_wait == TRUE && from == EAST){
