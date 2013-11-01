@@ -255,7 +255,7 @@ void driveRoad (from, mph)
 		init_semaphore_index = 1;
 		end_semaphore_index = 10;
 		shm.east_light == RED;
-	}else if(shm.west_cars == 0 && from = EAST){
+	}else if(shm.west_cars == 0 && from == EAST){
 		init_semaphore_index = 10;
 		end_semaphore_index = 1;
 		shm.west_light == RED;
