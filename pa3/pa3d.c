@@ -245,9 +245,13 @@ void driveRoad (from, mph)
 		if(from == WEST){
 			shm.west_light = GREEN;
 			shm.east_light = RED;
+			init_semaphore_index = 1;
+			end_semaphore_index = 10;
 		}else if(from == EAST){
 			shm.east_light = GREEN;
 			shm.west_light = RED;
+			init_semaphore_index = 10;
+			end_semaphore_index = 1;
 		}
 		shm.init_counter++;
 	}
