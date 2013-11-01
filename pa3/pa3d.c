@@ -251,19 +251,6 @@ void driveRoad (from, mph)
 		}
 		shm.init_counter++;
 	}
-	if(shm.east_cars == 0 && from == WEST){
-		init_semaphore_index = 1;
-		end_semaphore_index = 10;
-		shm.east_light = RED;
-		Printf("Car %d West free drive in, set East light %d  \n", c, shm.east_light);
-		goto enterRoad;
-	}else if(shm.west_cars == 0 && from == EAST){
-		init_semaphore_index = 10;
-		end_semaphore_index = 1;
-		shm.west_light = RED;
-		Printf("Car %d East free drive in, set West light %d  \n", c, shm.west_light);
-		goto enterRoad;
-	}
 
 	if(shm.west_wait == TRUE && from == EAST){
 		Printf("East car %d special wait\n", c);
@@ -281,6 +268,21 @@ void driveRoad (from, mph)
 		init_semaphore_index = 1;
 	  end_semaphore_index = 10;
 	}
+
+	if(shm.east_cars == 0 && from == WEST){
+		init_semaphore_index = 1;
+		end_semaphore_index = 10;
+		shm.east_light = RED;
+		Printf("Car %d West free drive in, set East light %d  \n", c, shm.east_light);
+		goto enterRoad;
+	}else if(shm.west_cars == 0 && from == EAST){
+		init_semaphore_index = 10;
+		end_semaphore_index = 1;
+		shm.west_light = RED;
+		Printf("Car %d East free drive in, set West light %d  \n", c, shm.west_light);
+		goto enterRoad;
+	}
+
 	Printf("\n West light %d, east cars %d\n", shm.west_light, shm.east_cars);
 	if(shm.west_light == RED && shm.east_cars > 0){
 		Printf("West car %d wait\n", c);
