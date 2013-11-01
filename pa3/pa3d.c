@@ -143,26 +143,23 @@
 void InitRoad ();
 void driveRoad (int from, int mph);
 
-#define ROADMUTAX 0
-#define WESTMUTAX 11
-#define EASTMUTAX 12
+#define WESTSIGNAL 10
+#define EASTSIGNAL 11
+#define RED 0
+#define GREEN 1
+#define TRUE 1
+#define	FALSE 0
 #define QUEUESIZE 1000
 
-typedef struct{
-  int q[QUEUESIZE -1];
-  int first;
-  int last;
-  int pointer;
-  int count;
-}queue;
-
 struct {		/* structure of variables to be shared */
-	int semaphore_list[13];
-	int west_cars;
-  int east_cars;
-  int direction_switch;
+	int semaphore_list[12];
+	int west_light;
+  int east_light;
+  int west_wait;
+  int east_wait;
   int west_wait_cars;
   int east_wait_cars;
+  int init_counter;
 } shm;
 
 
@@ -214,18 +211,19 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 1; i < 11; i++){
+	for(i = 0; i < 10; i++){
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
-	shm.semaphore_list[ROADMUTAX] = Seminit(1);
-	shm.semaphore_list[WESTMUTAX] = Seminit(1);
-	shm.semaphore_list[EASTMUTAX] = Seminit(1);
-	shm.east_cars = 0;
-	shm.west_cars = 0;
-	shm.direction_switch = 0;
+	shm.semaphore_list[WESTSIGNAL] = Seminit(1);
+	shm.semaphore_list[EASTSIGNAL] = Seminit(1);
+	shm.east_light = RED;
+	shm.west_light = RED;
 	shm.west_wait_cars = 0;
 	shm.east_wait_cars = 0;
+	shm.west_wait = FALSE;
+	shm.east_wait = FALSE;
+	shm.init_counter = 0;
 }
 
 #define IPOS(FROM)	(((FROM) == WEST) ? 1 : NUMPOS)
@@ -239,47 +237,40 @@ void driveRoad (from, mph)
 
 	c = Getpid ();				/* learn this car's id */
 
-	Printf("east car queue size: %d\n", shm.east_cars);
-	if(shm.west_cars > 0 && from == WEST){
-    Printf("release lock %d\n", WEST);
-    Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[WESTMUTAX]);
-    Signal(shm.semaphore_list[EASTMUTAX]);
-  }else if(shm.east_cars > 0 && from == EAST){
-    Printf("release lock %d\n", EAST);
-    Signal(shm.semaphore_list[ROADMUTAX]);
-    Signal(shm.semaphore_list[EASTMUTAX]);
-    Signal(shm.semaphore_list[WESTMUTAX]);
-  }
+	if(shm.init_counter == 0){
+		if(from == WEST){
+			shm.west_light = GREEN;
+			shm.east_light = RED;
+		}else if(from == EAST){
+			shm.east_light = GREEN;
+			shm.west_light = RED;
+		}
+		shm.init_counter++;
+	}
+
+	if(shm.west_wait == TRUE && from == EAST){
+		shm.east_wait = TRUE;
+		Wait(shm.semaphore_list[EASTSIGNAL]);
+	}
+	if(shum.east_wait == TRUE && from == WEST){
+		shm.west_wait = TRUE;
+		Wait(shm.semaphore_list[WESTSIGNAL]);
+	}
+	if(shm.west_light == RED && shm.east_cars > 0){
+		shm.east_light = RED;
+		shm.west_wait = TRUE;
+		Wait(shm.semaphore_list[WESTSIGNAL]);
+	}
+	if(shm.east_light == RED && shm.west_cars > 0){
+		shm.west_light = RED;
+		shm.east_wait = TRUE;
+		Wait(shm.semaphore_list[EASTSIGNAL]);
+	}
 
 	if(from == WEST){
-		shm.west_wait_cars += 1;
-		Printf(" west wait cars added: %d\n", shm.west_wait_cars);
-    Wait(shm.semaphore_list[ROADMUTAX]);
-    Wait(shm.semaphore_list[WESTMUTAX]);
-    Wait(shm.semaphore_list[EASTMUTAX]);
-  //  if(shm.west_cars == 0){
-	//    Wait(shm.semaphore_list[EASTMUTAX]);
- //   }
-    Printf("lock road %d\n", WEST);
-		init_semaphore_index = 1;
-		end_semaphore_index = 10;
-    shm.west_cars += 1;
-    shm.west_wait_cars -= 1;
-	}else{
-		shm.east_wait_cars += 1;
-		Printf(" east wait cars added: %d\n", shm.east_wait_cars);
-    Wait(shm.semaphore_list[ROADMUTAX]);
-    Wait(shm.semaphore_list[EASTMUTAX]);
-		Wait(shm.semaphore_list[WESTMUTAX]);
- //   if(shm.east_cars == 0){
-//	    Wait(shm.semaphore_list[WESTMUTAX]);
-//    }
-    Printf("lock road %d\n", EAST);
-    init_semaphore_index = 10;
-    end_semaphore_index = 1;
-    shm.east_cars += 1;
-    shm.east_wait_cars -= 1;
+		shm.west_cars += 1;
+	}else if(from == EAST){
+		shm.east_cars += 1;
 	}
 	Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
@@ -321,24 +312,19 @@ void driveRoad (from, mph)
 	PrintRoad ();
 	Printf ("Car %d exits road\n", c);
 	if(from == WEST){
-		shm.west_cars -= 1;
-		if(shm.west_cars == 0){
-			Printf(" east wait cars: %d\n", shm.east_wait_cars);
-			for(int j = 0; j < shm.east_wait_cars; j++){
-				Signal(shm.semaphore_list[EASTMUTAX]);
-				Signal(shm.semaphore_list[WESTMUTAX]);
-		    Signal(shm.semaphore_list[ROADMUTAX]);
-			}
+		shm.west_cars--;
+		if(shm.east_wait && shm.west_cars == 0){
+			Signal(shm.semaphore_list[EASTSIGNAL]);
+			shm.east_wait = FALSE;
 		}
-	}else{
-		shm.east_cars -= 1;
-		if(shm.east_cars == 0){
-			Printf(" west wait cars: %d\n", shm.west_wait_cars);
-			for(int j = 0; j < shm.west_wait_cars; j++){
-				Signal(shm.semaphore_list[WESTMUTAX]);
-				Signal(shm.semaphore_list[EASTMUTAX]);
-		    Signal(shm.semaphore_list[ROADMUTAX]);
-		  }
+
+	}else if(from == EAST){
+		shm.east_cars--;
+		if(shm.west_wait && shm.east_cars == 0){
+			Signal(shm.semaphore_list[WESTSIGNAL]);
+			shm.west_wait = FALSE;
 		}
 	}
+
+
 }
