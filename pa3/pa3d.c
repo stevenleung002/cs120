@@ -159,6 +159,8 @@ struct {		/* structure of variables to be shared */
   int east_wait;
   int west_wait_cars;
   int east_wait_cars;
+  int west_cars;
+  int east_cars;
   int init_counter;
 } shm;
 
@@ -221,6 +223,8 @@ void InitRoad ()
 	shm.west_light = RED;
 	shm.west_wait_cars = 0;
 	shm.east_wait_cars = 0;
+	shm.west_cars = 0;
+	shm.east_cars = 0;
 	shm.west_wait = FALSE;
 	shm.east_wait = FALSE;
 	shm.init_counter = 0;
@@ -250,20 +254,24 @@ void driveRoad (from, mph)
 
 	if(shm.west_wait == TRUE && from == EAST){
 		shm.east_wait = TRUE;
+		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
 	}
-	if(shum.east_wait == TRUE && from == WEST){
+	if(shm.east_wait == TRUE && from == WEST){
 		shm.west_wait = TRUE;
+		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
 	}
 	if(shm.west_light == RED && shm.east_cars > 0){
 		shm.east_light = RED;
 		shm.west_wait = TRUE;
+		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
 	}
 	if(shm.east_light == RED && shm.west_cars > 0){
 		shm.west_light = RED;
 		shm.east_wait = TRUE;
+		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
 	}
 
@@ -314,15 +322,21 @@ void driveRoad (from, mph)
 	if(from == WEST){
 		shm.west_cars--;
 		if(shm.east_wait && shm.west_cars == 0){
-			Signal(shm.semaphore_list[EASTSIGNAL]);
+			for(int i = 0; i < shm.east_wait_cars; i++){
+				Signal(shm.semaphore_list[EASTSIGNAL]);
+			}
 			shm.east_wait = FALSE;
+			shm.east_wait_cars = 0;
 		}
 
 	}else if(from == EAST){
 		shm.east_cars--;
 		if(shm.west_wait && shm.east_cars == 0){
-			Signal(shm.semaphore_list[WESTSIGNAL]);
+			for(int i = 0; i < shm.west_wait_cars; i++){
+				Signal(shm.semaphore_list[WESTSIGNAL]);
+			}
 			shm.west_wait = FALSE;
+			shm.west_wait_cars = 0;
 		}
 	}
 
