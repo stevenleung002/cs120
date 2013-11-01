@@ -292,6 +292,7 @@ void driveRoad (from, mph)
 		Wait(shm.semaphore_list[WESTSIGNAL]);
 		init_semaphore_index = 1;
     end_semaphore_index = 10;
+		goto enterRoad;
 	}
 	Printf("\n East light %d, west cars %d\n", shm.east_light, shm.west_cars);
 	if(shm.east_light == RED && shm.west_cars > 0){
@@ -302,6 +303,7 @@ void driveRoad (from, mph)
 		Wait(shm.semaphore_list[EASTSIGNAL]);
 		init_semaphore_index = 10;
     end_semaphore_index = 1;
+		goto enterRoad;
 	}
 
 	enterRoad:
