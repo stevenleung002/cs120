@@ -143,7 +143,7 @@
 void InitRoad ();
 void driveRoad (int from, int mph);
 
-#define WESTSIGNAL 10
+#define WESTSIGNAL 0
 #define EASTSIGNAL 11
 #define RED 0
 #define GREEN 1
@@ -213,7 +213,7 @@ void InitRoad ()
 	int i,sem;
 	Regshm ((char *) &shm, sizeof (shm));	/* register as shared */
 
-	for(i = 0; i < 10; i++){
+	for(i = 1; i < 11; i++){
 		sem = Seminit (1);
 		shm.semaphore_list[i] = sem;
 	}
