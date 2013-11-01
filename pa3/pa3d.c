@@ -257,12 +257,16 @@ void driveRoad (from, mph)
 		shm.east_wait = TRUE;
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
+		init_semaphore_index = 10;
+		end_semaphore_index = 1;
 	}
 	if(shm.east_wait == TRUE && from == WEST){
 		Printf("West car %d special wait\n", c);
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
+		init_semaphore_index = 1;
+	  end_semaphore_index = 10;
 	}
 	if(shm.west_light == RED && shm.east_cars > 0){
 		Printf("West car %d wait\n", c);
@@ -270,6 +274,8 @@ void driveRoad (from, mph)
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
+		init_semaphore_index = 1;
+    end_semaphore_index = 10;
 	}
 	if(shm.east_light == RED && shm.west_cars > 0){
 		Printf("East car %d wait\n", c);
@@ -277,6 +283,8 @@ void driveRoad (from, mph)
 		shm.east_wait = TRUE;
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
+		init_semaphore_index = 10;
+    end_semaphore_index = 1;
 	}
 
 	if(from == WEST){
