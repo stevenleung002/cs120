@@ -171,47 +171,23 @@ void Main ()
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 20);
+    driveRoad (WEST, 50);
     Exit ();
   }
 
   if (Fork () == 0) {
-    Delay (1000);
-    driveRoad (WEST, 20);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (1020);
-    driveRoad (WEST, 20);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (1040);
-    driveRoad (WEST, 20);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (1000);
+    Delay (100);
     driveRoad (EAST, 20);
     Exit ();
   }
 
   if (Fork () == 0) {
-    Delay (1020);
+    Delay (100);
     driveRoad (EAST, 20);
     Exit ();
   }
 
-  if (Fork () == 0) {
-    Delay (1040);
-    driveRoad (EAST, 20);
-    Exit ();
-  }
-
-  driveRoad (WEST, 20);
+  driveRoad (WEST, 1);
 
   Exit ();
 }
