@@ -244,14 +244,6 @@ void driveRoad (from, mph)
 	c = Getpid ();				/* learn this car's id */
 
 	if(shm.init_counter == 0){
-		if(from == WEST){
-			shm.west_light = GREEN; //Green = 1
-			shm.east_light = RED; // red = 0
-		}else if(from == EAST){
-			shm.east_light = GREEN;
-			shm.west_light = RED;
-		}
-
 		shm.init_counter++;
 		goto enterRoad;
 	}
@@ -384,6 +376,8 @@ void driveRoad (from, mph)
 		}else if(shm.west_wait_cars > 0){
 			Signal(shm.semaphore_list[WESTSIGNAL]);
 			shm.west_wait_cars -= 1;
+		}else if(shm.west_wait_cars == 0 && shm.east_wait_cars == 0){
+			shm.init_counter -= 1;
 		}
 
 	}else if(from == EAST){
@@ -397,6 +391,8 @@ void driveRoad (from, mph)
 		}else if(shm.east_wait_cars > 0){
 			Signal(shm.semaphore_list[EASTSIGNAL]);
 			shm.east_wait_cars -= 1;
+		}else if(shm.west_wait_cars == 0 && shm.east_wait_cars == 0){
+			shm.init_counter -= 1;
 		}
 	}
 
