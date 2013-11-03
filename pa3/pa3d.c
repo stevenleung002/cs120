@@ -391,9 +391,7 @@ void driveRoad (from, mph)
 	if(from == WEST){
 		shm.west_cars--;
 		if(shm.east_wait && shm.west_cars == 0){
-			for(int i = 0; i < shm.east_wait_cars; i++){
-				Signal(shm.semaphore_list[EASTSIGNAL]);
-			}
+			Signal(shm.semaphore_list[EASTSIGNAL]);
 			shm.east_wait = FALSE;
 			shm.east_wait_cars = 0;
 		}
@@ -401,9 +399,7 @@ void driveRoad (from, mph)
 	}else if(from == EAST){
 		shm.east_cars--;
 		if(shm.west_wait && shm.east_cars == 0){
-			for(int i = 0; i < shm.west_wait_cars; i++){
-				Signal(shm.semaphore_list[WESTSIGNAL]);
-			}
+			Signal(shm.semaphore_list[WESTSIGNAL]);
 			shm.west_wait = FALSE;
 			shm.west_wait_cars = 0;
 		}
