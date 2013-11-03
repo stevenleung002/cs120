@@ -167,65 +167,38 @@ struct {		/* structure of variables to be shared */
 
 void Main ()
 {
-  InitRoad ();
+        InitRoad ();
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (WEST, 10);
-    Exit ();
-  }
+        /* The following code is specific to this particular simulation,
+         * e.g., number of cars, directions, and speeds.  You should
+         * experiment with different numbers of cars, directions, and
+         * speeds to test your modification of driveRoad.  When your
+         * solution is tested, we will use different Main procedures,
+         * which will first call InitRoad before any calls to driveRoad.
+         * So, you should do any initializations in InitRoad.
+         */
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (WEST, 20);
-    Exit ();
-  }
+        if (Fork () == 0) {                        /* Car 2 */
+                Delay (1162);
+                driveRoad (WEST, 60);
+                Exit ();
+        }
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (WEST, 30);
-    Exit ();
-  }
+        if (Fork () == 0) {                        /* Car 3 */
+                Delay (900);
+                driveRoad (EAST, 50);
+                Exit ();
+        }
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (WEST, 40);
-    Exit ();
-  }
+        if (Fork () == 0) {                        /* Car 4 */
+                Delay (900);
+                driveRoad (WEST, 60);
+                Exit ();
+        }
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (EAST, 50);
-    Exit ();
-  }
+        driveRoad (EAST, 40);                        /* Car 1 */
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (EAST, 60);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (EAST, 70);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (EAST, 80);
-    Exit ();
-  }
-
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (EAST, 90);
-    Exit ();
-  }
-
-  driveRoad (WEST, 5);
-
-  Exit ();
+        Exit ();
 }
 
 
@@ -282,7 +255,7 @@ void driveRoad (from, mph)
 		shm.init_counter++;
 		goto enterRoad;
 	}
-
+/*
 	if(shm.west_wait == TRUE && from == EAST){
 		Printf("East car %d special wait\n", c);
 		shm.east_wait = TRUE;
@@ -294,28 +267,23 @@ void driveRoad (from, mph)
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
-	}
+	}*/
 
 	if(shm.east_cars == 0 && from == WEST){
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
-		shm.west_wait_cars -= 1;
-		shm.east_light = RED;
 		Printf("Car %d West free drive in, set East light %d  \n", c, shm.east_light);
 		goto enterRoad;
 	}else if(shm.west_cars == 0 && from == EAST){
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
-		shm.east_wait_cars -= 1;
-		shm.west_light = RED;
 		Printf("Car %d East free drive in, set West light %d  \n", c, shm.west_light);
 		goto enterRoad;
 	}
 
 	Printf("\n West light %d, east cars %d\n", shm.west_light, shm.east_cars);
-	if(shm.west_light == RED && shm.east_cars > 0){
+	if(shm.east_cars > 0){
 		Printf("West car %d wait\n", c);
-		shm.east_light = RED;
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
@@ -325,9 +293,8 @@ void driveRoad (from, mph)
 		goto enterRoad;
 	}
 	Printf("\n East light %d, west cars %d\n", shm.east_light, shm.west_cars);
-	if(shm.east_light == RED && shm.west_cars > 0){
+	if(shm.west_cars > 0){
 		Printf("East car %d wait\n", c);
-		shm.west_light = RED;
 		shm.east_wait = TRUE;
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
@@ -406,16 +373,20 @@ void driveRoad (from, mph)
 		shm.west_cars--;
 		if(shm.east_wait && shm.west_cars == 0){
 			Signal(shm.semaphore_list[EASTSIGNAL]);
-			shm.east_wait = FALSE;
-			shm.east_wait_cars = 0;
+			shm.east_wait_cars -= 1;
+			if(shm.east_wait_cars == 0){
+				shm.east_wait = FALSE;
+			}
 		}
 
 	}else if(from == EAST){
 		shm.east_cars--;
 		if(shm.west_wait && shm.east_cars == 0){
 			Signal(shm.semaphore_list[WESTSIGNAL]);
-			shm.west_wait = FALSE;
-			shm.west_wait_cars = 0;
+			shm.west_wait_cars -= 1;
+			if(shm.west_wait_cars == 0){
+				shm.west_wait = FALSE;
+			}
 		}
 	}
 
