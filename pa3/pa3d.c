@@ -195,31 +195,31 @@ void Main ()
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 50);
+    driveRoad (EAST, 50);
     Exit ();
   }
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 60);
+    driveRoad (EAST, 60);
     Exit ();
   }
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 70);
+    driveRoad (EAST, 70);
     Exit ();
   }
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 80);
+    driveRoad (EAST, 80);
     Exit ();
   }
 
   if (Fork () == 0) {
     Delay (0);
-    driveRoad (WEST, 90);
+    driveRoad (EAST, 90);
     Exit ();
   }
 
@@ -227,6 +227,8 @@ void Main ()
 
   Exit ();
 }
+
+
 
 /* Our tests will call your versions of InitRoad and driveRoad, so your
  * solution to the car simulation should be limited to modifying the code
