@@ -167,31 +167,55 @@ struct {		/* structure of variables to be shared */
 
 void Main ()
 {
+  int i;
+
   InitRoad ();
 
-  if (Fork () == 0) {
-    Delay (0);
-    driveRoad (WEST, 50);
-    Exit ();
-  }
+  driveRoad (WEST, 50);
 
-  if (Fork () == 0) {
-    Delay (100);
-    driveRoad (EAST, 20);
-    Exit ();
-  }
+  for (i=0; i<5; i++) {
 
-  if (Fork () == 0) {
-    Delay (100);
-    driveRoad (EAST, 20);
-    Exit ();
-  }
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (WEST, 50);
+      Exit ();
+    }
 
-  driveRoad (WEST, 1);
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (WEST, 50);
+      Exit ();
+    }
+
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (WEST, 50);
+      Exit ();
+    }
+
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (EAST, 50);
+      Exit ();
+    }
+
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (EAST, 50);
+      Exit ();
+    }
+
+    if (Fork () == 0) {
+      Delay (0);
+      driveRoad (EAST, 50);
+      Exit ();
+    }
+
+    Delay(4000);
+  }
 
   Exit ();
 }
-
 
 
 
