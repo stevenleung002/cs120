@@ -297,12 +297,16 @@ void driveRoad (from, mph)
 	}
 
 	if(shm.east_cars == 0 && from == WEST){
+		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
+		shm.west_wait_cars -= 1;
 		shm.east_light = RED;
 		Printf("Car %d West free drive in, set East light %d  \n", c, shm.east_light);
 		goto enterRoad;
 	}else if(shm.west_cars == 0 && from == EAST){
+		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
+		shm.east_wait_cars -= 1;
 		shm.west_light = RED;
 		Printf("Car %d East free drive in, set West light %d  \n", c, shm.west_light);
 		goto enterRoad;
@@ -315,6 +319,9 @@ void driveRoad (from, mph)
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
+		if(shm.east_wait_cars > 0){
+			shm.east_wait = TRUE;
+		}
 		goto enterRoad;
 	}
 	Printf("\n East light %d, west cars %d\n", shm.east_light, shm.west_cars);
@@ -324,6 +331,9 @@ void driveRoad (from, mph)
 		shm.east_wait = TRUE;
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
+		if(shm.west_wait_cars > 0){
+			shm.west_wait = TRUE;
+		}
 		goto enterRoad;
 	}
 
