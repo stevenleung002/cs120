@@ -381,6 +381,9 @@ void driveRoad (from, mph)
 			if(shm.east_wait_cars == 0){
 				shm.east_wait = FALSE;
 			}
+		}else if(shm.west_wait_cars > 0){
+			Signal(shm.semaphore_list[WESTSIGNAL]);
+			shm.west_wait_cars -= 1;
 		}
 
 	}else if(from == EAST){
@@ -391,6 +394,9 @@ void driveRoad (from, mph)
 			if(shm.west_wait_cars == 0){
 				shm.west_wait = FALSE;
 			}
+		}else if(shm.east_wait_cars > 0){
+			Signal(shm.semaphore_list[EASTSIGNAL]);
+			shm.east_wait_cars -= 1;
 		}
 	}
 
