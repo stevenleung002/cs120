@@ -167,38 +167,23 @@ struct {		/* structure of variables to be shared */
 
 void Main ()
 {
-        InitRoad ();
+  InitRoad ();
 
-        /* The following code is specific to this particular simulation,
-         * e.g., number of cars, directions, and speeds.  You should
-         * experiment with different numbers of cars, directions, and
-         * speeds to test your modification of driveRoad.  When your
-         * solution is tested, we will use different Main procedures,
-         * which will first call InitRoad before any calls to driveRoad.
-         * So, you should do any initializations in InitRoad.
-         */
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 10);
+    Exit ();
+  }
 
-        if (Fork () == 0) {                        /* Car 2 */
-                Delay (1162);
-                driveRoad (WEST, 60);
-                Exit ();
-        }
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (WEST, 80);
+    Exit ();
+  }
 
-        if (Fork () == 0) {                        /* Car 3 */
-                Delay (900);
-                driveRoad (EAST, 50);
-                Exit ();
-        }
+  driveRoad (WEST, 5);
 
-        if (Fork () == 0) {                        /* Car 4 */
-                Delay (900);
-                driveRoad (WEST, 60);
-                Exit ();
-        }
-
-        driveRoad (EAST, 40);                        /* Car 1 */
-
-        Exit ();
+  Exit ();
 }
 
 
