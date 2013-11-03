@@ -373,10 +373,14 @@ void driveRoad (from, mph)
 		if(from == WEST){
 			if(shm.east_wait == FALSE){
 				Signal(shm.semaphore_list[WESTSIGNAL]);
+			}else{
+				shm.west_wait = TRUE;
 			}
 		}else{
 			if(shm.west_wait == FALSE){
 				Signal(shm.semaphore_list[EASTSIGNAL]);
+			}else{
+				shm.east_wait == TRUE;
 			}
 		}
 
