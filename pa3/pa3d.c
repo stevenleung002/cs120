@@ -167,52 +167,63 @@ struct {		/* structure of variables to be shared */
 
 void Main ()
 {
-  int i;
-
   InitRoad ();
 
-  driveRoad (WEST, 50);
-
-  for (i=0; i<5; i++) {
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (WEST, 50);
-      Exit ();
-    }
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (WEST, 50);
-      Exit ();
-    }
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (WEST, 50);
-      Exit ();
-    }
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (EAST, 50);
-      Exit ();
-    }
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (EAST, 50);
-      Exit ();
-    }
-
-    if (Fork () == 0) {
-      Delay (0);
-      driveRoad (EAST, 50);
-      Exit ();
-    }
-
-    Delay(4000);
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (WEST, 10);
+    Exit ();
   }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (WEST, 20);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (WEST, 30);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (WEST, 40);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 50);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 60);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 70);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 80);
+    Exit ();
+  }
+
+  if (Fork () == 0) {
+    Delay (0);
+    driveRoad (EAST, 90);
+    Exit ();
+  }
+
+  driveRoad (WEST, 5);
 
   Exit ();
 }
