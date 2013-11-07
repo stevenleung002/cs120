@@ -150,7 +150,7 @@ void driveRoad (int from, int mph);
 #define TRUE 1
 #define	FALSE 0
 #define QUEUESIZE 1000
-#define DEBUG true
+#define DEBUG 0
 
 struct {		/* structure of variables to be shared */
 	int semaphore_list[13];
@@ -265,18 +265,18 @@ void driveRoad (from, mph)
 	if(shm.east_cars == 0 && from == WEST){
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
-		if DEBUG Printf("Car %d West free drive in\n", c);
+		if (DEBUG == TRUE) Printf("Car %d West free drive in\n", c);
 		goto enterRoad;
 	}else if(shm.west_cars == 0 && from == EAST){
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
-		if DEBUG Printf("Car %d East free drive in\n", c);
+		if (DEBUG == TRUE) Printf("Car %d East free drive in\n", c);
 		goto enterRoad;
 	}
 
-	if DEBUG Printf("\n east cars %d\n", shm.west_light, shm.east_cars);
+	if (DEBUG == TRUE) Printf("\n east cars %d\n", shm.west_light, shm.east_cars);
 	if(shm.east_cars > 0){
-		if DEBUG Printf("West car %d wait\n", c);
+		if (DEBUG == TRUE) Printf("West car %d wait\n", c);
 		shm.west_wait = TRUE;
 		shm.west_wait_cars += 1;
 		Wait(shm.semaphore_list[WESTSIGNAL]);
@@ -285,9 +285,9 @@ void driveRoad (from, mph)
 		}
 		goto enterRoad;
 	}
-	if DEBUG Printf("\n East light %d, west cars %d\n", shm.east_light, shm.west_cars);
+	if (DEBUG == TRUE) Printf("\n East light %d, west cars %d\n", shm.east_light, shm.west_cars);
 	if(shm.west_cars > 0){
-		if DEBUG Printf("East car %d wait\n", c);
+		if (DEBUG == TRUE) Printf("East car %d wait\n", c);
 		shm.east_wait = TRUE;
 		shm.east_wait_cars += 1;
 		Wait(shm.semaphore_list[EASTSIGNAL]);
@@ -309,7 +309,7 @@ void driveRoad (from, mph)
 		shm.east_cars += 1;
 
 	}
-	if DEBUG Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
+	if (DEBUG == TRUE) Printf("process %d setting semaphore %d\n", c, init_semaphore_index);
 	Wait (shm.semaphore_list[init_semaphore_index]);
 
 	EnterRoad (from);
@@ -318,7 +318,7 @@ void driveRoad (from, mph)
 	//Signal (shm.semaphore_list[init_semaphore_index]);
 
 	PrintRoad ();
-	if DEBUG Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
+	if (DEBUG == TRUE) Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
 
 	for (i = 1; i < NUMPOS; i++) {
 		if (from == WEST) {
@@ -329,17 +329,17 @@ void driveRoad (from, mph)
 			np = p - 1;
 		}
 
-		if DEBUG Printf("process %d setting semaphore %d\n", c, np);
+		if (DEBUG == TRUE) Printf("process %d setting semaphore %d\n", c, np);
 		Wait (shm.semaphore_list[np]);
 
 		Delay (3600/mph);
 		ProceedRoad ();
 
-		if DEBUG Printf("process %d releasing semaphore %d\n", c, p);
+		if (DEBUG == TRUE) Printf("process %d releasing semaphore %d\n", c, p);
 		Signal (shm.semaphore_list[p]);
 
 		PrintRoad ();
-		if DEBUG Printf ("Car %d moves from %d to %d\n", c, p, np);
+		if (DEBUG == TRUE) Printf ("Car %d moves from %d to %d\n", c, p, np);
 		if(from == WEST){
 			if(shm.east_wait == FALSE){
 				if(shm.west_wait_cars > 0){
@@ -365,7 +365,7 @@ void driveRoad (from, mph)
 
 	Signal (shm.semaphore_list[end_semaphore_index]);
 	PrintRoad ();
-	if DEBUG Printf ("Car %d exits road\n", c);
+	if (DEBUG == TRUE) Printf ("Car %d exits road\n", c);
 	if(from == WEST){
 		shm.west_cars--;
 		if(shm.east_wait && shm.west_cars == 0){
