@@ -318,7 +318,7 @@ void driveRoad (from, mph)
 	//Signal (shm.semaphore_list[init_semaphore_index]);
 
 	PrintRoad ();
-	if (DEBUG == TRUE) Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
+	Printf ("Car %d enters at %d at %d mph\n", c, IPOS(from), mph);
 
 	for (i = 1; i < NUMPOS; i++) {
 		if (from == WEST) {
@@ -339,7 +339,7 @@ void driveRoad (from, mph)
 		Signal (shm.semaphore_list[p]);
 
 		PrintRoad ();
-		if (DEBUG == TRUE) Printf ("Car %d moves from %d to %d\n", c, p, np);
+		Printf ("Car %d moves from %d to %d\n", c, p, np);
 		if(from == WEST){
 			if(shm.east_wait == FALSE){
 				if(shm.west_wait_cars > 0){
@@ -365,7 +365,7 @@ void driveRoad (from, mph)
 
 	Signal (shm.semaphore_list[end_semaphore_index]);
 	PrintRoad ();
-	if (DEBUG == TRUE) Printf ("Car %d exits road\n", c);
+	Printf ("Car %d exits road\n", c);
 	if(from == WEST){
 		shm.west_cars--;
 		if(shm.east_wait && shm.west_cars == 0){
