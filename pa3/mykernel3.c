@@ -13,6 +13,8 @@
 #define FALSE 0
 #define TRUE 1
 #define QUEUESIZE 1000
+#define DEBUG 0
+
 
 typedef struct{
   int q[QUEUESIZE -1];
@@ -154,11 +156,11 @@ void MyWait (p, s)
 {
 	/* modify or add code any way you wish */
 	semtab[s].value--;
-	Printf("process %d set semtab %d value is %d \n", p, s, semtab[s].value);
+	if (DEBUG == TRUE) Printf("process %d set semtab %d value is %d \n", p, s, semtab[s].value);
 	if (semtab[s].value < 0)
 	{
 		enqueue(&(semtab[s].pid_queue), p);
-		Printf("\nprocess %d get blocked at position %d \n\n", p, s);
+		if (DEBUG == TRUE) Printf("\nprocess %d get blocked at position %d \n\n", p, s);
 		Block(p);
 	}
 }
@@ -172,7 +174,7 @@ void MySignal (p, s)
 {
 	/* modify or add code any way you wish */
 	semtab[s].value++;
-	Printf("\nprocess %d signal semtab %d value to %d \n\n", p, s, semtab[s].value);
+	if (DEBUG == TRUE) Printf("\nprocess %d signal semtab %d value to %d \n\n", p, s, semtab[s].value);
 	if (semtab[s].value <= 0)
 	{
 		int unblock_pid = dequeue(&(semtab[s].pid_queue));
