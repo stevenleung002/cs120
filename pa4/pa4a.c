@@ -98,13 +98,13 @@ void Main ()
 
 	Printf ("A: t = %d\n", t);			/* Point A */
 
-	if ((t = setjmp (env)) == 0) {		/* conditional test */
+	if ((t = setjmp (env)) != 0) {		/* conditional test */
 		t = 2;
 		Printf ("B: t = %d\n", t);		/* Point B */
-		longjmp (env, t);
 	} else {
 		t = t + 2;
 		Printf ("C: t = %d\n", t);		/* Point C */
+		longjmp (env, t);
 	}
 	t = t + 1;
 	Printf ("D: t = %d\n", t);			/* Point D */
