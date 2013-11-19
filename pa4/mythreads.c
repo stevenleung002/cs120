@@ -12,6 +12,7 @@
 #define DEBUG 0
 static int MyInitThreadsCalled = 0;	/* 1 if MyInitThreads called, else 0 */
 static int head = 1;
+static int current_tid = 0;
 
 
 typedef struct{
@@ -126,7 +127,6 @@ int MySpawnThread (func, param)
 		Printf ("MySpawnThread: Must call MyInitThreads first\n");
 		Exit ();
 	}
-	head += 1;
 	if (setjmp (thread[0].env) == 0) {	/* save context of thread 0 */
 
 		/* The new thread will need stack space.  Here we use the
@@ -154,15 +154,14 @@ int MySpawnThread (func, param)
 		}
 
 		/* here when thread 1 is scheduled for the first time */
-
 		(*f) (p);			/* execute func (param) */
 
 		MyExitThread ();		/* thread 1 is done - exit */
 	}
 
 	thread[head].valid = 1;	/* mark the entry for the new thread valid */
-
-	return (1);		/* done spawning, return new thread id */
+	head += 1;
+	return (head - 1);		/* done spawning, return new thread id */
 }
 
 /*	MyYieldThread (t) causes the running thread to yield to thread t.
@@ -173,6 +172,8 @@ int MySpawnThread (func, param)
 int MyYieldThread (t)
 	int t;				/* thread being yielded to */
 {
+	int parent_id = current_tid;
+
 	if (! MyInitThreadsCalled) {
 		Printf ("MyYieldThread: Must call MyInitThreads first\n");
 		Exit ();
@@ -183,8 +184,10 @@ int MyYieldThread (t)
 		return (-1);
 	}
 
-  if (setjmp (thread[1-t].env) == 0) {
+  if (setjmp (thread[current_tid].env) == 0) {
+		current_tid = t;
     longjmp (thread[t].env, 1);
+    current_tid = parent_id;
   }
 }
 
@@ -197,6 +200,7 @@ int MyGetThread ()
 		Printf ("MyGetThread: Must call MyInitThreads first\n");
 		Exit ();
 	}
+	return current_tid;
 
 }
 
