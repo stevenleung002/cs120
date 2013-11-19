@@ -128,6 +128,14 @@ int MySpawnThread (func, param)
 		Printf ("MySpawnThread: Must call MyInitThreads first\n");
 		Exit ();
 	}
+
+	for (int i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
+		if(thread[i].valid == 0){
+			thread[i].valid = 1; /* mark the entry for the new thread valid */
+			head = i;
+		}
+	}
+
 	if (setjmp (thread[0].env) == 0) {	/* save context of thread 0 */
 
 		/* The new thread will need stack space.  Here we use the
@@ -160,13 +168,8 @@ int MySpawnThread (func, param)
 		MyExitThread ();		/* thread 1 is done - exit */
 		return parent_tid;
 	}
-	for (int i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
-		if(thread[i].valid == 0){
-			thread[i].valid = 1; /* mark the entry for the new thread valid */
-			head = i + 1;
-			return i; /* done spawning, return new thread id */
-		}
-	}
+
+	return head;
 
 	//what if maxthreads are all valid?
 
