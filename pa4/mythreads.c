@@ -13,6 +13,7 @@
 static int MyInitThreadsCalled = 0;	/* 1 if MyInitThreads called, else 0 */
 static int head = 1;
 static int current_tid = 0;
+static int parent_tid = 0;
 
 
 typedef struct{
@@ -157,11 +158,18 @@ int MySpawnThread (func, param)
 		(*f) (p);			/* execute func (param) */
 
 		MyExitThread ();		/* thread 1 is done - exit */
+		return parent_tid;
+	}
+	for (i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
+		if(thread[i].valid == 0){
+			thread[i].valid = 1; /* mark the entry for the new thread valid */
+			head = i;
+			return head; /* done spawning, return new thread id */
+		}
 	}
 
-	thread[head].valid = 1;	/* mark the entry for the new thread valid */
-	head += 1;
-	return (head - 1);		/* done spawning, return new thread id */
+	//what if maxthreads are all valid?
+
 }
 
 /*	MyYieldThread (t) causes the running thread to yield to thread t.
@@ -172,7 +180,6 @@ int MySpawnThread (func, param)
 int MyYieldThread (t)
 	int t;				/* thread being yielded to */
 {
-	int parent_id = current_tid;
 
 	if (! MyInitThreadsCalled) {
 		Printf ("MyYieldThread: Must call MyInitThreads first\n");
@@ -184,11 +191,17 @@ int MyYieldThread (t)
 		return (-1);
 	}
 
+	if(t == current_tid && t != 0){
+		longjmp(thread[t].env, 1);
+	}
+
   if (setjmp (thread[current_tid].env) == 0) {
+  	parent_tid = current_tid;
 		current_tid = t;
     longjmp (thread[t].env, 1);
-    current_tid = parent_id;
   }
+
+  return 0;
 }
 
 /*	MyGetThread () returns id of currently running thread.
@@ -227,4 +240,6 @@ void MyExitThread ()
 		Printf ("MyExitThread: Must call MyInitThreads first\n");
 		Exit ();
 	}
+	thread[current_tid].valid == 0;
+	current_tid = parent_tid;
 }
