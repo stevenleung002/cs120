@@ -126,7 +126,7 @@ int MySpawnThread (func, param)
 		Printf ("MySpawnThread: Must call MyInitThreads first\n");
 		Exit ();
 	}
-
+	head += 1;
 	if (setjmp (thread[0].env) == 0) {	/* save context of thread 0 */
 
 		/* The new thread will need stack space.  Here we use the
@@ -150,7 +150,6 @@ int MySpawnThread (func, param)
 		}
 
 		if (setjmp (thread[head].env) == 0) {	/* save context of 1 */
-			head += 1;
 			longjmp (thread[0].env, 1);	/* back to thread 0 */
 		}
 
