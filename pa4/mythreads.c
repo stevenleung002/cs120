@@ -22,6 +22,8 @@ typedef struct{
   int count;
 }queue;
 
+static queue tid_queue;
+
 // initialize queue
 void init_queue(queue *q)
 {
