@@ -8,7 +8,83 @@
 #include "umix.h"
 #include "mythreads.h"
 
+#define QUEUESIZE 1000
+#define DEBUG 0
 static int MyInitThreadsCalled = 0;	/* 1 if MyInitThreads called, else 0 */
+static int head = 1;
+
+
+typedef struct{
+  int q[QUEUESIZE -1];
+  int first;
+  int last;
+  int pointer;
+  int count;
+}queue;
+
+// initialize queue
+void init_queue(queue *q)
+{
+  q->first = 0;
+  q->last = QUEUESIZE - 1;
+  q->count = 0;
+  q->pointer = 0;
+}
+
+//insert element to queue
+void enqueue(queue *q, int x)
+{
+  if (q->count >= QUEUESIZE)
+  Printf("Warning: queue overflow enqueue x=%d\n",x);
+  else {
+    q->last = (q->last+1) % QUEUESIZE;
+    q->q[ q->last ] = x;
+    q->count = q->count + 1;
+  }
+}
+
+//remove element from queue, always the first element
+int dequeue(queue *q)
+{
+  int x;
+
+  if (q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  else {
+    x = q->q[ q->first ];
+    q->first = (q->first+1) % QUEUESIZE;
+    q->count = q->count - 1;
+  }
+
+  return(x);
+}
+
+
+// helper method to get last element in queue
+int get_queue_last(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->last ];
+}
+// helper method to get the first element in queue
+int get_queue_first(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  return q->q[ q->first ];
+}
+// helpter method to get next element in queue
+int get_queue_next(queue *q)
+{
+  if(q->count <= 0) Printf("Warning: empty queue dequeue.\n");
+  int current = q->pointer;
+  q->pointer = (q->pointer + 1) % q->count;
+  return q->q[current];
+}
+// helpter method to check whether queue is empty or not
+int empty(queue *q)
+{
+  if (q->count <= 0) return 1;
+  else return 0;
+}
 
 static struct thread {			/* thread table */
 	int valid;			/* 1 if entry is valid, else 0 */
@@ -26,12 +102,12 @@ void MyInitThreads ()
 	int i;
 
 	thread[0].valid = 1;			/* the initial thread is 0 */
-
 	for (i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
 		thread[i].valid = 0;
 	}
 
 	MyInitThreadsCalled = 1;
+  init_queue(&pid_queue);
 }
 
 /*	MySpawnThread (func, param) spawns a new thread to execute
@@ -71,7 +147,8 @@ int MySpawnThread (func, param)
 			Exit ();
 		}
 
-		if (setjmp (thread[1].env) == 0) {	/* save context of 1 */
+		if (setjmp (thread[head].env) == 0) {	/* save context of 1 */
+			head += 1;
 			longjmp (thread[0].env, 1);	/* back to thread 0 */
 		}
 
@@ -82,7 +159,7 @@ int MySpawnThread (func, param)
 		MyExitThread ();		/* thread 1 is done - exit */
 	}
 
-	thread[1].valid = 1;	/* mark the entry for the new thread valid */
+	thread[head].valid = 1;	/* mark the entry for the new thread valid */
 
 	return (1);		/* done spawning, return new thread id */
 }
@@ -105,9 +182,9 @@ int MyYieldThread (t)
 		return (-1);
 	}
 
-        if (setjmp (thread[1-t].env) == 0) {
-                longjmp (thread[t].env, 1);
-        }
+  if (setjmp (thread[1-t].env) == 0) {
+    longjmp (thread[t].env, 1);
+  }
 }
 
 /*	MyGetThread () returns id of currently running thread.
