@@ -163,8 +163,8 @@ int MySpawnThread (func, param)
 	for (int i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
 		if(thread[i].valid == 0){
 			thread[i].valid = 1; /* mark the entry for the new thread valid */
-			head = i;
-			return head; /* done spawning, return new thread id */
+			head = i + 1;
+			return i; /* done spawning, return new thread id */
 		}
 	}
 
