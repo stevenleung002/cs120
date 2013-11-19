@@ -109,7 +109,7 @@ void MyInitThreads ()
 	}
 
 	MyInitThreadsCalled = 1;
-  init_queue(&pid_queue);
+  init_queue(&tid_queue);
 }
 
 /*	MySpawnThread (func, param) spawns a new thread to execute
