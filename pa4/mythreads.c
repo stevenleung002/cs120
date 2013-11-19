@@ -160,7 +160,7 @@ int MySpawnThread (func, param)
 		MyExitThread ();		/* thread 1 is done - exit */
 		return parent_tid;
 	}
-	for (i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
+	for (int i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
 		if(thread[i].valid == 0){
 			thread[i].valid = 1; /* mark the entry for the new thread valid */
 			head = i;
