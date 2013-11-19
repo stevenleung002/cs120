@@ -117,7 +117,7 @@ void Main ()
 	int i, t, me;
 	void printSquares (), printCubes ();
 
-	InitThreads ();
+	MyInitThreads ();
 
 	me = MyGetThread ();
 	t = MySpawnThread (printSquares, me); // t == 1
