@@ -15,7 +15,7 @@
  * Note that you cannot mix your functions with the working ones, so you
  * must replace all of them.
  *
- * 
+ *
  * Some notes:
  *
  * 1. MyInitThreads () should initialize all your thread management data
@@ -52,7 +52,7 @@
  * x = MyYieldThread (7);	// causes thread 3 to yield to thread 7
  *
  * Thread 7 contains the statement:
- * 
+ *
  * x = MyYieldThread (t);	// causes thread 7 to yield to thread t
  *
  * Assume that at some point in the past, thread 7 had run and had executed
@@ -70,7 +70,7 @@
  * determines which thread to yield to, rather than this being specified via
  * a parameter as in MyYieldThread.  MySchedThread does not return any value.
  * If MySchedThread is called and there is no thread to run, it should call
- * Exit () so that the Umix process properly completes.  
+ * Exit () so that the Umix process properly completes.
  *
  * 5. IMPORTANT: MySchedThread should implement the FIFO (first-in-first-out)
  * scheduling discipline.  Thus, if a thread calls MySchedThread, it should
@@ -86,7 +86,7 @@
  * the thread table, should be reclaimed so that another thread may use them.
  * Finally, it should call MySchedThread () to pass control to another active
  * thread.
- * 
+ *
  * WHAT TO TURN IN
  *
  * You must turn in one file: mythreads.c, which contains your user-level
@@ -119,12 +119,12 @@ void Main ()
 
 	InitThreads ();
 
-	me = GetThread ();
-	t = SpawnThread (printSquares, me);
-	t = SpawnThread (printCubes, t);
+	me = MyGetThread ();
+	t = MySpawnThread (printSquares, me); // t == 1
+	t = MySpawnThread (printCubes, t); // t == 2
 
 	for (i = 0; i < NUMYIELDS; i++) {
-		YieldThread (t);
+		MyYieldThread (t);
 		Printf ("T%d: square = %d, cube = %d\n", me, square, cube);
 	}
 
@@ -138,8 +138,8 @@ void printSquares (t)
 
 	for (i = 0; i < NUMYIELDS; i++) {
 		square = i * i;
-		Printf ("T%d: %d squared = %d\n", GetThread (), i, square);
-		YieldThread (t);
+		Printf ("T%d: %d squared = %d\n", MyGetThread (), i, square);
+		MyYieldThread (t);
 	}
 }
 
@@ -150,7 +150,7 @@ void printCubes (t)
 
 	for (i = 0; i < NUMYIELDS; i++) {
 		cube = i * i * i;
-		Printf ("T%d: %d cubed = %d\n", GetThread (), i, cube);
-		YieldThread (t);
+		Printf ("T%d: %d cubed = %d\n", MyGetThread (), i, cube);
+		MyYieldThread (t);
 	}
 }
