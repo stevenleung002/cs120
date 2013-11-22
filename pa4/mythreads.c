@@ -154,7 +154,7 @@ int MySpawnThread (func, param)
 			break;
 		}
 	}
-  Printf("Current_tid => %d\n", current_tid);
+  Printf("Current_env => %d\n", thread[current_tid].env);
 	if (setjmp (thread[current_tid].env) == 0) {	/* save context of thread 0 */
 
 		/* The new thread will need stack space.  Here we use the
