@@ -105,13 +105,14 @@ void setStackSpace(int pos)
 	if(pos < 0){
 		return;
 	}
-	setjmp(thread[MAXTHREADS - pos].env);
-	char s[STACKSIZE];
-	if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
-		Printf ("Stack space reservation failed\n");
-		Exit ();
+	if( setjmp(thread[MAXTHREADS - pos].env) == 0){
+		char s[STACKSIZE];
+		if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
+			Printf ("Stack space reservation failed\n");
+			Exit ();
+		}
+		setStackSpace(pos - 1);
 	}
-	setStackSpace(pos - 1);
 
 }
 
@@ -127,7 +128,7 @@ void MyInitThreads ()
 	MyInitThreadsCalled = 1;
   init_queue(&tid_queue);
   setStackSpace(MAXTHREADS);
-  longjmp(thread[0].env, 0);
+  longjmp(thread[0].env, 1);
 }
 
 /*	MySpawnThread (func, param) spawns a new thread to execute
@@ -164,7 +165,7 @@ int MySpawnThread (func, param)
 		 * actually used; to prevent an optimizing compiler from
 		 * removing it, it should be referenced.
 		 */
-		longjmp(thread[head].env);
+		longjmp(thread[head].env, 1);
 
 		void (*f)() = func;	/* f saves func on top of stack */
 		int p = param;		/* p saves param on top of stack */
