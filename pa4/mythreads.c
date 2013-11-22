@@ -100,6 +100,20 @@ static struct thread {			/* thread table */
 /*	MyInitThreads () initializes the thread package.  Must be the first
  *	function called by any user program that uses the thread package.
  */
+void setStackSpace(int pos)
+{
+	if(pos < 0){
+		return;
+	}
+	setjmp(thread[MAXTHREADS - pos].env);
+	char s[STACKSIZE];
+	if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
+		Printf ("Stack space reservation failed\n");
+		Exit ();
+	}
+	setStackSpace(pos - 1);
+
+}
 
 void MyInitThreads ()
 {
@@ -114,21 +128,6 @@ void MyInitThreads ()
   init_queue(&tid_queue);
   setStackSpace(MAXTHREADS);
   longjmp(thread[0].env);
-}
-
-void setStackSpace(int pos)
-{
-	if(pos < 0){
-		return;
-	}
-	setjmp(thread[MAXTHREADS - pos].env);
-	char s[STACKSIZE];
-	if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
-		Printf ("Stack space reservation failed\n");
-		Exit ();
-	}
-	setStackSpace(pos - 1);
-
 }
 
 /*	MySpawnThread (func, param) spawns a new thread to execute
