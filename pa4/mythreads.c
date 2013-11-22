@@ -106,6 +106,7 @@ void setStackSpace(int pos)
 		return;
 	}
 	if( setjmp(thread[MAXTHREADS - pos].env) == 0){
+    Printf("thread env %d\n", thread[MAXTHREADS - pos].env);
 		char s[STACKSIZE];
 		if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
 			Printf ("Stack space reservation failed\n");
