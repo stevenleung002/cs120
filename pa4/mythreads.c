@@ -153,6 +153,7 @@ int MySpawnThread (func, param)
 			break;
 		}
 	}
+  Printf("Current_tid => %d\n", current_tid);
 	if (setjmp (thread[current_tid].env) == 0) {	/* save context of thread 0 */
 
 		/* The new thread will need stack space.  Here we use the
@@ -207,17 +208,19 @@ int MyYieldThread (t)
 		return (-1);
 	}
 
-	if(t == current_tid && t != 0){
-		longjmp(thread[t].env, 1);
-	}
+  int magic = 0;
 
   if (setjmp (thread[current_tid].env) == 0) {
+    if(magic == 1){
+      return current_tid;
+    }else{
+      magic = 1;
+    }
   	parent_tid = current_tid;
 		current_tid = t;
     longjmp (thread[t].env, 1);
   }
 
-  return 0;
 }
 
 /*	MyGetThread () returns id of currently running thread.
