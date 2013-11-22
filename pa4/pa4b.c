@@ -139,7 +139,7 @@ void Main ()
 	void printSquares ();
 
 	MyInitThreads ();	/* Initialize, must be called first */
-
+	Printf("Init thread finished\n");
 	MySpawnThread (printSquares, 0);
 
 	for (i = 0; i < NUMYIELDS; i++) {
