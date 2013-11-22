@@ -127,7 +127,7 @@ void MyInitThreads ()
 	MyInitThreadsCalled = 1;
   init_queue(&tid_queue);
   setStackSpace(MAXTHREADS);
-  longjmp(thread[0].env);
+  longjmp(thread[0].env, 0);
 }
 
 /*	MySpawnThread (func, param) spawns a new thread to execute
