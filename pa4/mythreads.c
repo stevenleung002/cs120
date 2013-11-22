@@ -128,8 +128,18 @@ void MyInitThreads ()
 
 	MyInitThreadsCalled = 1;
   init_queue(&tid_queue);
-  setStackSpace(MAXTHREADS);
-  Printf("finish carving stack\n");
+
+  if(setjmp(thread[0].env) == 0){
+    char s[STACKSIZE];
+    if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
+      Printf ("Stack space reservation failed\n");
+      Exit ();
+    }
+    setStackSpace(MAXTHREADS - 1);
+  }else{
+    Printf("finish carving stack\n");
+    return;
+  }
   longjmp(thread[0].env, 1);
 }
 
