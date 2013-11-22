@@ -93,6 +93,8 @@ int empty(queue *q)
 static struct thread {			/* thread table */
 	int valid;			/* 1 if entry is valid, else 0 */
 	jmp_buf env;			/* current context */
+  void *func;
+  int param;
 } thread[MAXTHREADS];
 
 #define STACKSIZE	65536		/* maximum size of thread stack */
@@ -113,7 +115,20 @@ void setStackSpace(int pos)
 			Exit ();
 		}
 		setStackSpace(pos - 1);
-	}
+	}else{
+    void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
+    int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
+
+    if (setjmp (thread[MAXTHREADS - pos].env) == 0) { /* save context of 1 */
+      longjmp (thread[current_tid].env, 1); /* back to thread 0 */
+    }
+
+    /* here when thread 1 is scheduled for the first time */
+    (*f) (p);     /* execute func (param) */
+
+    MyExitThread ();    /* thread 1 is done - exit */
+
+  }
 
 }
 
@@ -178,21 +193,9 @@ int MySpawnThread (func, param)
 		 * actually used; to prevent an optimizing compiler from
 		 * removing it, it should be referenced.
 		 */
+    thread[head].func = func;
+    thread[head].param = param;
 		longjmp(thread[head].env, 1);
-
-		void (*f)() = func;	/* f saves func on top of stack */
-		int p = param;		/* p saves param on top of stack */
-
-
-		if (setjmp (thread[head].env) == 0) {	/* save context of 1 */
-			longjmp (thread[current_tid].env, 1);	/* back to thread 0 */
-		}
-
-		/* here when thread 1 is scheduled for the first time */
-		(*f) (p);			/* execute func (param) */
-
-		MyExitThread ();		/* thread 1 is done - exit */
-		return parent_tid;
 	}
 
 	return head;
