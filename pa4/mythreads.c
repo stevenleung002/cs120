@@ -1,4 +1,4 @@
-/*	User-level thread system
+/*  User-level thread system
  *
  */
 
@@ -10,7 +10,7 @@
 
 #define QUEUESIZE 1000
 #define DEBUG 0
-static int MyInitThreadsCalled = 0;	/* 1 if MyInitThreads called, else 0 */
+static int MyInitThreadsCalled = 0; /* 1 if MyInitThreads called, else 0 */
 static int head = 1;
 static int search_from = 1;
 static int current_tid = 0;
@@ -89,34 +89,34 @@ int empty(queue *q)
   else return 0;
 }
 
-static struct thread {			/* thread table */
-	int valid;			/* 1 if entry is valid, else 0 */
-	jmp_buf env;			/* current context */
+static struct thread {      /* thread table */
+  int valid;      /* 1 if entry is valid, else 0 */
+  jmp_buf env;      /* current context */
   jmp_buf clean_env;
   int clean;
   void *func;
   int param;
 } thread[MAXTHREADS];
 
-#define STACKSIZE	65536		/* maximum size of thread stack */
+#define STACKSIZE 65536   /* maximum size of thread stack */
 
-/*	MyInitThreads () initializes the thread package.  Must be the first
- *	function called by any user program that uses the thread package.
+/*  MyInitThreads () initializes the thread package.  Must be the first
+ *  function called by any user program that uses the thread package.
  */
 void setStackSpace(int pos)
 {
-	if(pos < 0){
-		return;
-	}
-	if( setjmp(thread[MAXTHREADS - pos].clean_env) == 0){
+  if(pos < 0){
+    return;
+  }
+  if( setjmp(thread[MAXTHREADS - pos].clean_env) == 0){
     Printf("thread %d env %d\n", MAXTHREADS - pos, thread[MAXTHREADS - pos].clean_env);
-		char s[STACKSIZE];
-		if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
-			Printf ("Stack space reservation failed\n");
-			Exit ();
-		}
-		setStackSpace(pos - 1);
-	}else{
+    char s[STACKSIZE];
+    if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
+      Printf ("Stack space reservation failed\n");
+      Exit ();
+    }
+    setStackSpace(pos - 1);
+  }else{
     Printf("Executing thread %d program\n",MAXTHREADS - pos );
     void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
     int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
@@ -137,16 +137,16 @@ void setStackSpace(int pos)
 
 void MyInitThreads ()
 {
-	int i;
+  int i;
 
-	thread[0].valid = 1;			/* the initial thread is 0 */
+  thread[0].valid = 1;      /* the initial thread is 0 */
   thread[0].clean = 1;
-	for (i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
-		thread[i].valid = 0;
+  for (i = 1; i < MAXTHREADS; i++) {  /* all other threads invalid */
+    thread[i].valid = 0;
     thread[i].clean = 1;
-	}
+  }
 
-	MyInitThreadsCalled = 1;
+  MyInitThreadsCalled = 1;
   init_queue(&tid_queue);
   enqueue(&tid_queue, 0);
 
@@ -165,78 +165,78 @@ void MyInitThreads ()
   thread[0].clean = 0;
 }
 
-/*	MySpawnThread (func, param) spawns a new thread to execute
- *	func (param), where func is a function with no return value and
- *	param is an integer parameter.  The new thread does not begin
- *	executing until another thread yields to it.
+/*  MySpawnThread (func, param) spawns a new thread to execute
+ *  func (param), where func is a function with no return value and
+ *  param is an integer parameter.  The new thread does not begin
+ *  executing until another thread yields to it.
  */
 
 int MySpawnThread (func, param)
-	void (*func)();		/* function to be executed */
-	int param;		/* integer parameter */
+  void (*func)();   /* function to be executed */
+  int param;    /* integer parameter */
 {
-	if (! MyInitThreadsCalled) {
-		Printf ("MySpawnThread: Must call MyInitThreads first\n");
-		Exit ();
-	}
+  if (! MyInitThreadsCalled) {
+    Printf ("MySpawnThread: Must call MyInitThreads first\n");
+    Exit ();
+  }
 
   //have problem here, what if all 10 threads are running, and another one comes in
-	for (int i = 0; i < MAXTHREADS; i++) {	/* all other threads invalid */
-		if(thread[search_from].valid == 0){
-			thread[search_from].valid = 1; /* mark the entry for the new thread valid */
-			head = search_from;
+  for (int i = 0; i < MAXTHREADS; i++) {  /* all other threads invalid */
+    if(thread[search_from].valid == 0){
+      thread[search_from].valid = 1; /* mark the entry for the new thread valid */
+      head = search_from;
       search_from = (search_from + 1) % MAXTHREADS;
-			break;
-		}
+      break;
+    }
     search_from++;
-	}
+  }
   enqueue(&tid_queue, head);
   Printf("Current_env => %d\n", thread[current_tid].env);
-	if (setjmp (thread[current_tid].env) == 0) {	/* save context of thread 0 */
+  if (setjmp (thread[current_tid].env) == 0) {  /* save context of thread 0 */
 
-		/* The new thread will need stack space.  Here we use the
-		 * following trick: the new thread simply uses the current
-		 * stack, and so there is no need to allocate space.  However,
-		 * to ensure that thread 0's stack may grow and (hopefully)
-		 * not bump into thread 1's stack, the top of the stack is
-		 * effectively extended automatically by declaring a local
-		 * variable (a large "dummy" array).  This array is never
-		 * actually used; to prevent an optimizing compiler from
-		 * removing it, it should be referenced.
-		 */
+    /* The new thread will need stack space.  Here we use the
+     * following trick: the new thread simply uses the current
+     * stack, and so there is no need to allocate space.  However,
+     * to ensure that thread 0's stack may grow and (hopefully)
+     * not bump into thread 1's stack, the top of the stack is
+     * effectively extended automatically by declaring a local
+     * variable (a large "dummy" array).  This array is never
+     * actually used; to prevent an optimizing compiler from
+     * removing it, it should be referenced.
+     */
     thread[head].func = func;
     thread[head].param = param;
     if(thread[head].clean == 1){
       longjmp(thread[head].clean_env, 1);
     }else{
-  		longjmp(thread[head].env, 1);
+      longjmp(thread[head].env, 1);
     }
-	}
+  }
 
-	return head;
+  return head;
 
-	//what if maxthreads are all valid?
+  //what if maxthreads are all valid?
 
 }
 
-/*	MyYieldThread (t) causes the running thread to yield to thread t.
- *	Returns id of thread that yielded to t (i.e., the thread that called
- *	MyYieldThread), or -1 if t is an invalid id.
+/*  MyYieldThread (t) causes the running thread to yield to thread t.
+ *  Returns id of thread that yielded to t (i.e., the thread that called
+ *  MyYieldThread), or -1 if t is an invalid id.
  */
 
 int MyYieldThread (t)
-	int t;				/* thread being yielded to */
+  int t;        /* thread being yielded to */
 {
 
-	if (! MyInitThreadsCalled) {
-		Printf ("MyYieldThread: Must call MyInitThreads first\n");
-		Exit ();
-	}
+  if (! MyInitThreadsCalled) {
+    Printf ("MyYieldThread: Must call MyInitThreads first\n");
+    Exit ();
+  }
 
-	if (! thread[t].valid) {
-		Printf ("MyYieldThread: Thread %d does not exist\n", t);
-		return (-1);
-	}
+  if (! thread[t].valid) {
+    Printf ("MyYieldThread: Thread %d does not exist\n", t);
+    return (-1);
+  }
 
   if( current_tid == t){
     return current_tid;
@@ -250,37 +250,37 @@ int MyYieldThread (t)
     }else{
       magic = 1;
     }
-		current_tid = t;
+    current_tid = t;
     longjmp (thread[t].env, 1);
   }
 
 }
 
-/*	MyGetThread () returns id of currently running thread.
+/*  MyGetThread () returns id of currently running thread.
  */
 
 int MyGetThread ()
 {
-	if (! MyInitThreadsCalled) {
-		Printf ("MyGetThread: Must call MyInitThreads first\n");
-		Exit ();
-	}
-	return current_tid;
+  if (! MyInitThreadsCalled) {
+    Printf ("MyGetThread: Must call MyInitThreads first\n");
+    Exit ();
+  }
+  return current_tid;
 
 }
 
-/*	MySchedThread () causes the running thread to simply give up the
- *	CPU and allow another thread to be scheduled.  Selecting which
- *	thread to run is determined here.  Note that the same thread may
- * 	be chosen (as will be the case if there are no other threads).
+/*  MySchedThread () causes the running thread to simply give up the
+ *  CPU and allow another thread to be scheduled.  Selecting which
+ *  thread to run is determined here.  Note that the same thread may
+ *  be chosen (as will be the case if there are no other threads).
  */
 
 void MySchedThread ()
 {
-	if (! MyInitThreadsCalled) {
-		Printf ("MySchedThread: Must call MyInitThreads first\n");
-		Exit ();
-	}
+  if (! MyInitThreadsCalled) {
+    Printf ("MySchedThread: Must call MyInitThreads first\n");
+    Exit ();
+  }
   int tid;
   if(tid_queue.count > 0){
     tid = dequeue(&tid_queue);
@@ -291,16 +291,16 @@ void MySchedThread ()
 
 }
 
-/*	MyExitThread () causes the currently running thread to exit.
+/*  MyExitThread () causes the currently running thread to exit.
  */
 
 void MyExitThread ()
 {
-	if (! MyInitThreadsCalled) {
-		Printf ("MyExitThread: Must call MyInitThreads first\n");
-		Exit ();
-	}
-	thread[current_tid].valid = 0;
+  if (! MyInitThreadsCalled) {
+    Printf ("MyExitThread: Must call MyInitThreads first\n");
+    Exit ();
+  }
+  thread[current_tid].valid = 0;
   thread[current_tid].clean = 1;
   if(tid_queue.count > 0){
     dequeue(&tid_queue);
