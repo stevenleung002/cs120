@@ -105,6 +105,7 @@ static struct thread {      /* thread table */
  */
 void setStackSpace(int pos)
 {
+  int current_pos = pos;
   if(current_pos < 0){
     return;
   }
