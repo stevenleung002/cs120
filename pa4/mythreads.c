@@ -117,6 +117,7 @@ void setStackSpace(int pos)
 		}
 		setStackSpace(pos - 1);
 	}else{
+    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
     int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
 
