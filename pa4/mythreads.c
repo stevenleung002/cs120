@@ -12,6 +12,7 @@
 #define DEBUG 0
 static int MyInitThreadsCalled = 0;	/* 1 if MyInitThreads called, else 0 */
 static int head = 1;
+static int search_from = 1;
 static int current_tid = 0;
 
 typedef struct{
@@ -178,12 +179,15 @@ int MySpawnThread (func, param)
 		Exit ();
 	}
 
-	for (int i = 1; i < MAXTHREADS; i++) {	/* all other threads invalid */
-		if(thread[i].valid == 0){
-			thread[i].valid = 1; /* mark the entry for the new thread valid */
-			head = i;
+  //have problem here, what if all 10 threads are running, and another one comes in
+	for (int i = 0; i < MAXTHREADS; i++) {	/* all other threads invalid */
+		if(thread[search_from].valid == 0){
+			thread[search_from].valid = 1; /* mark the entry for the new thread valid */
+			head = search_from;
+      search_from = (search_from + 1) % MAXTHREADS;
 			break;
 		}
+    search_from++;
 	}
   enqueue(&tid_queue, head);
   Printf("Current_env => %d\n", thread[current_tid].env);
@@ -232,6 +236,10 @@ int MyYieldThread (t)
 		Printf ("MyYieldThread: Thread %d does not exist\n", t);
 		return (-1);
 	}
+
+  if( current_tid == t){
+    return current_tid;
+  }
 
   int magic = 0;
 
