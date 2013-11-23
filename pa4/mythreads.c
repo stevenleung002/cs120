@@ -105,28 +105,27 @@ static struct thread {      /* thread table */
  */
 void setStackSpace(int pos)
 {
-  int tem_pos = pos;
-  if(tem_pos < 0){
+  if(pos < 0){
     return;
   }
-  if( setjmp(thread[MAXTHREADS - tem_pos].clean_env) == 0){
-    Printf("thread %d env %d\n", MAXTHREADS - tem_pos, thread[MAXTHREADS - tem_pos].clean_env);
+  if( setjmp(thread[MAXTHREADS - pos].clean_env) == 0){
+    Printf("thread %d env %d\n", MAXTHREADS - pos, thread[MAXTHREADS - pos].clean_env);
     char s[STACKSIZE];
     if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
       Printf ("Stack space reservation failed\n");
       Exit ();
     }
-    setStackSpace(tem_pos - 1);
+    setStackSpace(pos - 1);
   }else{
-    void (*f)() = thread[MAXTHREADS - tem_pos].func; /* f saves func on top of stack */
-    int p = thread[MAXTHREADS - tem_pos].param;    /* p saves param on top of stack */
+    void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
+    int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
 
-    thread[MAXTHREADS - tem_pos].clean = 0;
-    if (setjmp (thread[MAXTHREADS - tem_pos].env) == 0) { /* save context of 1 */
+    thread[MAXTHREADS - pos].clean = 0;
+    if (setjmp (thread[MAXTHREADS - pos].env) == 0) { /* save context of 1 */
       longjmp (thread[current_tid].env, 1); /* back to thread 0 */
     }
 
-    Printf("Executing thread %d program\n",MAXTHREADS - tem_pos );
+    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
 
