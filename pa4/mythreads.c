@@ -117,6 +117,7 @@ void setStackSpace(int pos)
     }
     setStackSpace(pos - 1);
   }else{
+    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
     int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
 
@@ -125,7 +126,6 @@ void setStackSpace(int pos)
       longjmp (thread[current_tid].env, 1); /* back to thread 0 */
     }
 
-    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
 
@@ -161,8 +161,8 @@ void MyInitThreads ()
     Printf("finish carving stack\n");
     return;
   }
-  thread[0].clean = 0;
   longjmp(thread[0].clean_env, 1);
+  thread[0].clean = 0;
 }
 
 /*  MySpawnThread (func, param) spawns a new thread to execute
@@ -191,6 +191,7 @@ int MySpawnThread (func, param)
     search_from++;
   }
   enqueue(&tid_queue, head);
+  Printf("Current_env => %d\n", thread[current_tid].env);
   if (setjmp (thread[current_tid].env) == 0) {  /* save context of thread 0 */
 
     /* The new thread will need stack space.  Here we use the
@@ -206,10 +207,8 @@ int MySpawnThread (func, param)
     thread[head].func = func;
     thread[head].param = param;
     if(thread[head].clean == 1){
-      Printf("Setting thread %d function\n", head);
       longjmp(thread[head].clean_env, 1);
     }else{
-      Printf("Jump to excuting %d function\n", head);
       longjmp(thread[head].env, 1);
     }
   }
