@@ -91,7 +91,7 @@ int empty(queue *q)
 static struct thread {			/* thread table */
 	int valid;			/* 1 if entry is valid, else 0 */
 	jmp_buf env;			/* current context */
-  jum_buf clean_env;
+  jmp_buf clean_env;
   int clean;
   void *func;
   int param;
