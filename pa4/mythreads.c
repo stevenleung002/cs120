@@ -206,10 +206,10 @@ int MySpawnThread (func, param)
     thread[head].func = func;
     thread[head].param = param;
     if(thread[head].clean == 1){
-      Printf("Setting thread %d function\n", thread[current_tid].env);
+      Printf("Setting thread %d function\n", head);
       longjmp(thread[head].clean_env, 1);
     }else{
-      Printf("Jump to excuting %d function\n", thread[current_tid].env);
+      Printf("Jump to excuting %d function\n", head);
       longjmp(thread[head].env, 1);
     }
   }
