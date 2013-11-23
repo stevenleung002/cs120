@@ -117,7 +117,6 @@ void setStackSpace(int pos)
     }
     setStackSpace(pos - 1);
   }else{
-    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
     int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
 
@@ -126,6 +125,7 @@ void setStackSpace(int pos)
       longjmp (thread[current_tid].env, 1); /* back to thread 0 */
     }
 
+    Printf("Executing thread %d program\n",MAXTHREADS - pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
 
