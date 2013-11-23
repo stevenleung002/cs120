@@ -105,27 +105,28 @@ static struct thread {      /* thread table */
  */
 void setStackSpace(int pos)
 {
-  if(pos < 0){
+  int tem_pos = pos;
+  if(tem_pos < 0){
     return;
   }
-  if( setjmp(thread[MAXTHREADS - pos].clean_env) == 0){
-    Printf("thread %d env %d\n", MAXTHREADS - pos, thread[MAXTHREADS - pos].clean_env);
+  if( setjmp(thread[MAXTHREADS - tem_pos].clean_env) == 0){
+    Printf("thread %d env %d\n", MAXTHREADS - tem_pos, thread[MAXTHREADS - tem_pos].clean_env);
     char s[STACKSIZE];
     if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
       Printf ("Stack space reservation failed\n");
       Exit ();
     }
-    setStackSpace(pos - 1);
+    setStackSpace(tem_pos - 1);
   }else{
-    Printf("Executing thread %d program\n",MAXTHREADS - pos );
-    void (*f)() = thread[MAXTHREADS - pos].func; /* f saves func on top of stack */
-    int p = thread[MAXTHREADS - pos].param;    /* p saves param on top of stack */
+    void (*f)() = thread[MAXTHREADS - tem_pos].func; /* f saves func on top of stack */
+    int p = thread[MAXTHREADS - tem_pos].param;    /* p saves param on top of stack */
 
-    thread[MAXTHREADS - pos].clean = 0;
-    if (setjmp (thread[MAXTHREADS - pos].env) == 0) { /* save context of 1 */
+    thread[MAXTHREADS - tem_pos].clean = 0;
+    if (setjmp (thread[MAXTHREADS - tem_pos].env) == 0) { /* save context of 1 */
       longjmp (thread[current_tid].env, 1); /* back to thread 0 */
     }
 
+    Printf("Executing thread %d program\n",MAXTHREADS - tem_pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
 
@@ -161,8 +162,8 @@ void MyInitThreads ()
     Printf("finish carving stack\n");
     return;
   }
-  longjmp(thread[0].clean_env, 1);
   thread[0].clean = 0;
+  longjmp(thread[0].clean_env, 1);
 }
 
 /*  MySpawnThread (func, param) spawns a new thread to execute
@@ -191,7 +192,6 @@ int MySpawnThread (func, param)
     search_from++;
   }
   enqueue(&tid_queue, head);
-  Printf("Current_env => %d\n", thread[current_tid].env);
   if (setjmp (thread[current_tid].env) == 0) {  /* save context of thread 0 */
 
     /* The new thread will need stack space.  Here we use the
@@ -207,8 +207,10 @@ int MySpawnThread (func, param)
     thread[head].func = func;
     thread[head].param = param;
     if(thread[head].clean == 1){
+      Printf("Setting thread %d function\n", head);
       longjmp(thread[head].clean_env, 1);
     }else{
+      Printf("Jump to excuting %d function\n", head);
       longjmp(thread[head].env, 1);
     }
   }
