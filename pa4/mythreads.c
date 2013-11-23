@@ -162,8 +162,8 @@ void MyInitThreads ()
     Printf("finish carving stack\n");
     return;
   }
-  thread[0].clean = 0;
   longjmp(thread[0].clean_env, 1);
+  thread[0].clean = 0;
 }
 
 /*  MySpawnThread (func, param) spawns a new thread to execute
