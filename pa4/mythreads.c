@@ -293,6 +293,8 @@ void MyExitThread ()
 	}
 	thread[current_tid].valid = 0;
   thread[current_tid].clean = 1;
-  dequeue(&tid_queue);
+  if(tid_queue.count > 0){
+    dequeue(&tid_queue);
+  }
   MySchedThread();
 }
