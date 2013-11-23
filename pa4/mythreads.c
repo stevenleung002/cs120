@@ -191,7 +191,6 @@ int MySpawnThread (func, param)
     search_from++;
   }
   enqueue(&tid_queue, head);
-  Printf("Current_env => %d\n", thread[current_tid].env);
   if (setjmp (thread[current_tid].env) == 0) {  /* save context of thread 0 */
 
     /* The new thread will need stack space.  Here we use the
@@ -207,8 +206,10 @@ int MySpawnThread (func, param)
     thread[head].func = func;
     thread[head].param = param;
     if(thread[head].clean == 1){
+      Printf("Setting thread %d function\n", thread[current_tid].env);
       longjmp(thread[head].clean_env, 1);
     }else{
+      Printf("Jump to excuting %d function\n", thread[current_tid].env);
       longjmp(thread[head].env, 1);
     }
   }
