@@ -161,6 +161,20 @@ void MyInitThreads ()
     setStackSpace(MAXTHREADS - 1);
   }else{
     if(DEBUG == 1) Printf("finish carving stack\n");
+
+    thread[0].clean = 0;
+    if(DEBUG == 1) Printf("setting jump for thread %d\n", 0);
+    if (setjmp (thread[0].env) == 0) { /* save context of 1 */
+    if(DEBUG == 1) Printf("setting env as %d\n", thread[0].env);
+      longjmp (thread[current_tid].env, 1); /* back to thread 0 */
+    }
+
+    void (*f)() = thread[current_tid].func; /* f saves func on top of stack */
+    int p = thread[current_tid].param;    /* p saves param on top of stack */
+    if(DEBUG == 1) Printf("Executing thread %d program\n",MAXTHREADS - pos );
+    /* here when thread 1 is scheduled for the first time */
+    (*f) (p);     /* execute func (param) */
+
     return;
   }
 }
