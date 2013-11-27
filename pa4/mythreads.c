@@ -140,6 +140,7 @@ void setStackSpace(int pos)
 void MyInitThreads ()
 {
   int i;
+  int setjum_ret;
 
   thread[0].valid = 1;      /* the initial thread is 0 */
   thread[0].clean = 1;
@@ -152,16 +153,19 @@ void MyInitThreads ()
   init_queue(&tid_queue);
   enqueue(&tid_queue, 0);
 
-  if(setjmp(thread[0].clean_env) == 0){
+  setjum_ret = setjmp(thread[0].clean_env);
+
+  if( setjum_ret == 0){
     char s[STACKSIZE];
     if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
       if(DEBUG == 1) Printf ("Stack space reservation failed\n");
       Exit ();
     }
     setStackSpace(MAXTHREADS - 1);
-  }else{
+  }else if(setjum_ret == 2){
     if(DEBUG == 1) Printf("finish carving stack\n");
-
+    return;
+  }else{
     thread[0].clean = 0;
     if(DEBUG == 1) Printf("setting jump for thread %d\n", 0);
     if (setjmp (thread[0].env) == 0) { /* save context of 1 */
@@ -174,9 +178,9 @@ void MyInitThreads ()
     if(DEBUG == 1) Printf("Executing thread %d program\n",MAXTHREADS - pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
-
     return;
   }
+
 }
 
 /*  MySpawnThread (func, param) spawns a new thread to execute
