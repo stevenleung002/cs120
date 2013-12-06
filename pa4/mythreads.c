@@ -9,12 +9,12 @@
 #include "mythreads.h"
 
 #define QUEUESIZE 1000
-#define DEBUG 0
+#define DEBUG 0 
 static int MyInitThreadsCalled = 0; /* 1 if MyInitThreads called, else 0 */
 static int head = 1;
 static int search_from = 1;
 static int current_tid = 0;
-
+static int spawning_tid = 0;
 typedef struct{
   int q[QUEUESIZE -1];
   int first;
@@ -59,6 +59,43 @@ int dequeue(queue *q)
   }
 
   return(x);
+}
+
+void print_queue(queue *q){
+ if(DEBUG == 1) Printf("\n" );
+ int counter = 0;
+ while( counter < q->count){
+  if(DEBUG == 1) Printf("%d ", q->q[q->first + counter]);
+  counter++;
+ }
+ if(DEBUG == 1) Printf("\n");
+}
+
+void move_to_queue_head(queue *q, int t){
+  int count = 0; 
+  while(count < q->count){
+    if(q->q[q->first + count] == t){
+      //Printf("hit on %d", (q->first + count));
+      if((q->first + count) == q->first){
+        break;
+      }
+      int inner_count = count;
+      while((q->first + inner_count) != q->last){
+//        if(DEBUG == 1) Printf("replace %d with %d\n");
+        q->q[q->first + inner_count] = q->q[q->first + inner_count + 1];
+//        print_queue(&tid_queue);
+        inner_count += 1;
+      }
+      if(q->last > 1 && q->first > 0){
+        q->last -= 1;
+        q->q[q->first - 1] = t;
+        q->first -= 1;
+      }
+    }
+    count++;
+  }
+
+  
 }
 
 
@@ -106,11 +143,11 @@ void setStackSpace(int pos)
 {
   if(pos < 1){
     thread[0].clean = 0;
-    longjmp(thread[0].clean_env, 1);
+    longjmp(thread[0].clean_env, 2);
   }
+  char s[STACKSIZE];
   if( setjmp(thread[MAXTHREADS - pos].clean_env) == 0){
     if(DEBUG == 1) Printf("thread %d env %d\n", MAXTHREADS - pos, thread[MAXTHREADS - pos].clean_env);
-    char s[STACKSIZE];
     if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
       if(DEBUG == 1) Printf ("Stack space reservation failed\n");
       Exit ();
@@ -118,10 +155,10 @@ void setStackSpace(int pos)
     setStackSpace(pos - 1);
   }else{
 
-    thread[MAXTHREADS - pos].clean = 0;
-    if(DEBUG == 1) Printf("setting jump for thread %d\n", MAXTHREADS - pos);
-    if (setjmp (thread[MAXTHREADS - pos].env) == 0) { /* save context of 1 */
-    if(DEBUG == 1) Printf("setting env as %d\n", thread[MAXTHREADS - pos].env);
+    thread[head].clean = 0;
+    if(DEBUG == 1) Printf("setting jump for thread %d\n", head);
+    if (setjmp (thread[head].env) == 0) { /* save context of 1 */
+    if(DEBUG == 1) Printf("setting env as %d\n", thread[head].env);
       longjmp (thread[current_tid].env, 1); /* back to thread 0 */
     }
 
@@ -153,10 +190,10 @@ void MyInitThreads ()
   init_queue(&tid_queue);
   enqueue(&tid_queue, 0);
 
+  char s[STACKSIZE];
   setjum_ret = setjmp(thread[0].clean_env);
-
+  if(DEBUG == 1) Printf("thread %d env %d\n", 0, thread[0].clean_env);
   if( setjum_ret == 0){
-    char s[STACKSIZE];
     if (((int) &s[STACKSIZE-1]) - ((int) &s[0]) + 1 != STACKSIZE) {
       if(DEBUG == 1) Printf ("Stack space reservation failed\n");
       Exit ();
@@ -175,9 +212,9 @@ void MyInitThreads ()
 
     void (*f)() = thread[current_tid].func; /* f saves func on top of stack */
     int p = thread[current_tid].param;    /* p saves param on top of stack */
-    if(DEBUG == 1) Printf("Executing thread %d program\n",MAXTHREADS - pos );
     /* here when thread 1 is scheduled for the first time */
     (*f) (p);     /* execute func (param) */
+    MyExitThread();
     return;
   }
 
@@ -207,7 +244,9 @@ int MySpawnThread (func, param)
       break;
     }
     search_from++;
+    search_from = search_from % MAXTHREADS;
   }
+  if(DEBUG == 1) Printf("%d enque\n", head);
   enqueue(&tid_queue, head);
   if (setjmp (thread[current_tid].env) == 0) {  /* save context of thread 0 */
 
@@ -251,26 +290,39 @@ int MyYieldThread (t)
     Printf ("MyYieldThread: Must call MyInitThreads first\n");
     Exit ();
   }
-
+  if( t < 0 || t > MAXTHREADS){
+    return (-1);
+  }
   if (! thread[t].valid) {
     Printf ("MyYieldThread: Thread %d does not exist\n", t);
     return (-1);
   }
 
   if( current_tid == t){
+    if(DEBUG == 1) Printf(" yield to your self\n");
     return current_tid;
   }
-
-
+  if(DEBUG == 1) Printf("thread %d yield enqueue\n", current_tid);
+  enqueue(&tid_queue, current_tid);
+  //print_queue(&tid_queue);
+  if(DEBUG == 1) Printf("thread %d yield dequeue\n", current_tid);
+  dequeue(&tid_queue);
+  //print_queue(&tid_queue);
+  move_to_queue_head(&tid_queue, t);
+  print_queue(&tid_queue);
+  if(DEBUG == 1) Printf("rearrange thread %d to first\n", t);
+  
   if (setjmp (thread[current_tid].env) == 0) {
     current_tid = t;
-    if(DEBUG == 1) Printf("thread %d yield long jump %d\n", t, thread[t].env);
+    if(DEBUG == 1) Printf("yield to thread %d long jump %d\n", t, thread[t].env);
     longjmp (thread[t].env, 1);
   }else{
     return parent_thread;
   }
 
 }
+
+
 
 /*  MyGetThread () returns id of currently running thread.
  */
@@ -282,7 +334,6 @@ int MyGetThread ()
     Exit ();
   }
   return current_tid;
-
 }
 
 /*  MySchedThread () causes the running thread to simply give up the
@@ -299,8 +350,21 @@ void MySchedThread ()
   }
   int tid;
   if(tid_queue.count > 0){
-    tid = dequeue(&tid_queue);
-    MyYieldThread(tid);
+    if(thread[current_tid].valid == 1){
+      enqueue(&tid_queue, current_tid);
+    }
+    if(DEBUG == 1) Printf("deque %d in sched thread\n", get_queue_first(&tid_queue));
+    dequeue(&tid_queue);
+    print_queue(&tid_queue);
+    
+    if(tid_queue.count == 0){
+      Exit();
+    }
+    tid = get_queue_first(&tid_queue);
+    if (setjmp (thread[current_tid].env) == 0) {
+      current_tid = tid;
+      longjmp(thread[tid].env, 1);
+    }
   }else{
     Exit();
   }
@@ -316,10 +380,13 @@ void MyExitThread ()
     Printf ("MyExitThread: Must call MyInitThreads first\n");
     Exit ();
   }
+  if(DEBUG == 1) Printf("thread %d exiting\n", current_tid);
   thread[current_tid].valid = 0;
   thread[current_tid].clean = 1;
   if(tid_queue.count > 0){
-    dequeue(&tid_queue);
+//    dequeue(&tid_queue);
+    print_queue(&tid_queue);
+    MySchedThread();
   }
-  MySchedThread();
+  Exit();
 }
